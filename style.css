@@ -1,0 +1,44 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
+  padding: 20px;
+}
+h1 {
+  color: #ffffff;
+}
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+.team-slot {
+  background: #1e1e1e;
+  border: 2px dashed #555;
+  padding: 10px;
+  height: 300px;
+  position: relative;
+  cursor: pointer;
+  overflow: auto;
+  color: #e0e0e0;
+}
+.pokemon-img {
+  width: 80px;
+  height: 80px;
+}
+.move-select,
+.ability-select,
+select {
+  margin-top: 5px;
+  width: 100%;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  padding: 5px;
+}
+.move-compatible {
+  background-color: #2e7d32;
+}
+.move-incompatible {
+  background-color: #ef6c00;
+}
