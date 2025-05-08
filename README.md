@@ -18,20 +18,18 @@ Whether you're theorycrafting future runs or tracking your current setup mid-gam
 
 ## 🧪 Upcoming Features
 
-- **Held Item Planning** per Pokémon  
-- Auto-detection of optimal fusions  
-- Strategy suggestions based on type synergy  
-- Shareable team links or QR codes  
+- **Held Item Planning** per Pokémon
+- TBD
 
 ---
 
 ## 🙌 Credits & Thanks
 
-- Huge thanks to **Sandstormer**, whose Pokémon data files made this project much easier to build and saved countless hours on mapping data.  
+- Huge thanks to **Sandstormer**, for letting me use his Pokémon data files and made this project much easier to build and saved countless hours on mapping data.  
 - Shoutout to everyone in the **PokéRogue Discord** community — you’re awesome and make the game even more enjoyable!  
 
 ---
 
 ## 💬 Feedback & Contributions
 
-This tool is a fan-made side project meant to support the PokéRogue community. If you have ideas, feedback, or just want to say hi, feel free to drop by the Discord!
+This tool is a fan-made side project meant to support the PokéRogue community. If you have ideas, feedback, or just want to say hi, feel free to drop by the PokeRogue Community Discord!
