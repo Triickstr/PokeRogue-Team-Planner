@@ -1,4 +1,25 @@
 
+
+async function waitForTomSelect(selectElement, timeout = 1000) {
+  return new Promise((resolve) => {
+    const interval = 50;
+    const maxTries = timeout / interval;
+    let tries = 0;
+
+    const check = () => {
+      const ts = selectElement.tomselect;
+      if (ts) return resolve(ts);
+      tries++;
+      if (tries >= maxTries) return resolve(null);
+      setTimeout(check, interval);
+    };
+
+    check();
+  });
+}
+
+
+let pokemonData = [];
 window.typeColors = {
   Normal: '#A8A77A',
   Fire: '#EE8130',
@@ -138,70 +159,102 @@ const observeChanges = (element) => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  const pokemonData = typeof window.items !== 'undefined' ? window.items : (typeof items !== 'undefined' ? items : []);
   const teamGrid = document.getElementById("teamGrid");
+  teamGrid.innerHTML = '';
 
+  // Load Pokémon data
+  pokemonData = typeof window.items !== 'undefined' ? window.items : (typeof items !== 'undefined' ? items : []);
   if (!pokemonData || !Array.isArray(pokemonData) || pokemonData.length === 0) {
     teamGrid.innerHTML = '<p>Failed to load Pokémon data.</p>';
     return;
   }
 
-const getAllMoves = () => {
-  const moveSet = new Set();
-  pokemonData.forEach(p => {
-    const exclude = [p.t1, p.t2, p.a1, p.a2, p.ha, p.pa];
-    Object.keys(p).forEach(key => {
-      const val = parseInt(key);
-      if (!isNaN(val) && !exclude.includes(val)) {
-        moveSet.add(val);
-      }
+  // Move generation after data is loaded
+  window.allMoves = (() => {
+    const moveSet = new Set();
+    pokemonData.forEach(p => {
+      const exclude = [p.t1, p.t2, p.a1, p.a2, p.ha, p.pa];
+      Object.keys(p).forEach(key => {
+        const val = parseInt(key);
+        if (!isNaN(val) && !exclude.includes(val)) {
+          moveSet.add(val);
+        }
+      });
     });
-  });
-  return Array.from(moveSet);
-};
+    return Array.from(moveSet);
+  })();
 
-  const allMoves = getAllMoves();
+  // Create exactly 6 team slots
+  for (let i = 0; i < 6; i++) {
+    teamGrid.appendChild(createTeamSlot());
+  }
+});
+
+
 
   const createPokemonSelector = (onSelect) => {
     const select = document.createElement('select');
-    setTimeout(() => new TomSelect(select, { maxOptions: null }), 0);
     select.innerHTML = '<option value="">Select a Pokémon</option>' +
       pokemonData.map((p, i) => {
         const name = window.speciesNames?.[p.row] || `#${p.row} - ${p.img}`;
         return `<option value="${i}">${name}</option>`;
       }).join('');
-    select.onchange = () => onSelect(select.value);
-    select.addEventListener('change', updateTeamSummary);
+    select.className = 'base-pokemon-select';
+    // Append it now so TomSelect can attach properly
+    setTimeout(() => {
+      if (!select.tomselect) {
+        new TomSelect(select, { maxOptions: null });
+      }
+    }, 0);
+
+    select.onchange = () => {
+      const idx = select.value;
+      const selected = pokemonData[idx];
+      select.closest('.team-slot').dataset.pokemonRow = selected?.row ?? '';
+      onSelect(idx);
+    };
+
+    select.addEventListener('change', () => {
+    onSelect(select.value);
+    updateTeamSummary();
+  });
     return select;
   };
 
-  const createMoveDropdown = (pokemon) => {
-    const sel = document.createElement('select');
-    setTimeout(() => new TomSelect(sel, {
-      maxOptions: null,
-      render: {
-        option: function(data, escape) {
-          const isCompatible = pokemon.hasOwnProperty(data.value);
-          const color = isCompatible ? '#d4edda' : '#ffeeba';
-          return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
+const createMoveDropdown = (pokemon) => {
+  const sel = document.createElement('select');
+  sel.className = 'move-select';
+
+  sel.innerHTML = '<option value="">Select a Move</option>' +
+    window.allMoves.map(m => {
+      const isCompatible = pokemon && pokemon.hasOwnProperty(String(m));
+      const name = window.fidToName?.[m] || `Move ${m}`;
+      return `<option value="${m}" class="${isCompatible ? 'move-compatible' : 'move-incompatible'}">${name}</option>`;
+    }).join('');
+
+  setTimeout(() => {
+    if (!sel.tomselect) {
+      new TomSelect(sel, {
+        maxOptions: null,
+        render: {
+          option: (data, escape) => {
+            const isCompatible = pokemon && pokemon.hasOwnProperty(data.value);
+            const color = isCompatible ? '#d4edda' : '#ffeeba';
+            return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
           },
-        item: function(data, escape) {
-          const isCompatible = pokemon.hasOwnProperty(data.value);
-          const color = isCompatible ? '#d4edda' : '#ffeeba';
-          return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
+          item: (data, escape) => {
+            const isCompatible = pokemon && pokemon.hasOwnProperty(data.value);
+            const color = isCompatible ? '#d4edda' : '#ffeeba';
+            return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
+          }
         }
-      }
-    }), 0);
-    sel.className = 'move-select';
-    sel.innerHTML = '<option value="">Select a Move</option>' +
-      allMoves.map(m => {
-        const isCompatible = String(m) in pokemon;
-        const name = window.fidToName?.[m] || `Move ${m}`;
-        const opt = `<option value="${m}" class="${isCompatible ? 'move-compatible' : 'move-incompatible'}">${name}</option>`;
-        return opt;
-      }).join('');
-    return sel;
-  };
+      });
+    }
+  }, 0);
+
+  return sel;
+};
+
 
   const createAbilityDropdown = (pokemon) => {
     const abilities = [pokemon.a1, pokemon.a2, pokemon.ha].filter(Boolean);
@@ -216,6 +269,7 @@ const getAllMoves = () => {
     return sel;
   };
   const renderPokemonBox = (slot, pokemon) => {
+    slot.dataset.pokemonRow = pokemon.row;
     slot.innerHTML = '';
 
     const img = document.createElement('img');
@@ -299,7 +353,8 @@ const getAllMoves = () => {
 const fusionContainer = document.createElement('div');
 fusionContainer.className = 'fusion-container';
 
-const renderFusionInfo = (fusionPoke) => {
+const renderFusionInfo = (fusionPoke, slot) => {
+  slot.dataset.fusionRow = fusionPoke.row;
   fusionContainer.innerHTML = ''; // Clear before rendering
 
   // Image
@@ -308,7 +363,7 @@ const renderFusionInfo = (fusionPoke) => {
   img.className = 'pokemon-img';
   img.onerror = () => img.style.display = 'none';
   img.onclick = () => {
-    renderFusionSelector();
+    renderFusionSelector(slot);
     setTimeout(updateTeamSummary, 10);  // force re-check
   };
   fusionContainer.appendChild(img);
@@ -356,7 +411,7 @@ const renderFusionInfo = (fusionPoke) => {
   setTimeout(() => new TomSelect(fusionAbilitySelect, { maxOptions: null }), 0);
 };
 
-const renderFusionSelector = () => {
+const renderFusionSelector = (slot) => {
   fusionContainer.innerHTML = '';
   const select = document.createElement('select');
   select.innerHTML = `<option value="">Select Fusion Pokémon</option>` +
@@ -367,13 +422,13 @@ const renderFusionSelector = () => {
   setTimeout(() => new TomSelect(select, { maxOptions: null }), 0);
   select.onchange = () => {
     const selected = pokemonData[select.value];
-    renderFusionInfo(selected);
+    renderFusionInfo(selected, slot);  // <-- pass slot here too
     setTimeout(updateTeamSummary, 10);
   };
   fusionContainer.appendChild(select);
 };
 
-renderFusionSelector();
+renderFusionSelector(slot);
 slot.appendChild(fusionContainer);
 setTimeout(updateTeamSummary, 10);
   };
@@ -395,5 +450,225 @@ setTimeout(updateTeamSummary, 10);
     teamGrid.appendChild(createTeamSlot());
   }
 
+const exportTeamToJson = () => {
+  const teamData = [];
+
+  document.querySelectorAll('.team-slot').forEach(slot => {
+    const baseSelect = slot.querySelector('select');
+    const selectedPokemon = pokemonData[baseSelect?.value];
+    let pokemonRow = parseInt(slot.dataset.pokemonRow);
+    pokemonRow = isNaN(pokemonRow) ? null : pokemonRow;
+
+    const moveSelects = slot.querySelectorAll('.move-select');
+    const moveCheckboxes = slot.querySelectorAll('.move-checkbox');
+    const moves = Array.from(moveSelects).map((s) => {
+      const ts = s.tomselect;
+      const val = ts?.getValue();
+      return val !== '' ? parseInt(val) : null;
+    });
+
+    const baseAbility = slot.querySelector('.ability-select')?.tomselect?.getValue();
+    const baseAbilityParsed = baseAbility ? parseInt(baseAbility) : null;
+
+    const nature = slot.querySelector('.nature-select')?.tomselect?.getValue() || null;
+
+    // Bulbasaur fallback logic
+    const hasAnyMoves = moves.some(m => m !== null && !isNaN(m));
+    const hasBaseAbility = baseAbilityParsed !== null;
+    const hasNature = !!nature;
+
+    if (pokemonRow === null && (hasAnyMoves || hasBaseAbility || hasNature)) {
+      pokemonRow = 0; // fallback to Bulbasaur
+    }
+
+    const fusionSelect = slot.querySelector('.fusion-container select');
+    const selectedFusion = pokemonData[fusionSelect?.value];
+    let fusionRow = parseInt(slot.dataset.fusionRow);
+    fusionRow = isNaN(fusionRow) ? null : fusionRow;
+
+    const fusionAbility = slot.querySelector('.fusion-ability-select')?.tomselect?.getValue();
+    const fusionAbilityParsed = fusionAbility ? parseInt(fusionAbility) : null;
+
+    // Fusion fallback logic
+    if (fusionRow === null && fusionAbilityParsed !== null) {
+      fusionRow = 0;
+    }
+
+    teamData.push({
+      pokemon: pokemonRow,
+      fusion: fusionRow,
+      moves: moves,
+      ability: baseAbilityParsed,
+      fusionAbility: fusionAbilityParsed,
+      nature
+    });
+  });
+
+  const blob = new Blob([JSON.stringify(teamData, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "poke_team.json";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+function clearAllCheckboxes() {
+  document.querySelectorAll('.move-checkbox, .nature-checkbox, .fusion-ability-checkbox').forEach(cb => {
+    cb.checked = false;
+  });
+}
+
+
+//  Basic import logic using .row field matching
+async function waitForTomSelect(select, timeout = 1000) {
+  return new Promise(resolve => {
+    const interval = 50;
+    const maxTries = timeout / interval;
+    let tries = 0;
+
+    const check = () => {
+      if (select?.tomselect) return resolve(select.tomselect);
+      if (++tries >= maxTries) return resolve(null);
+      setTimeout(check, interval);
+    };
+
+    check();
+  });
+}
+
+async function importTeamData(data) {
+  const slots = document.querySelectorAll('.team-slot');
+  console.log("Starting import of team data:", data);
+
+  for (let i = 0; i < data.length; i++) {
+    const entry = data[i];
+    const slot = slots[i];
+    console.log(`\n--- Processing slot ${i + 1} ---`);
+    console.log("Entry:", entry);
+
+    if (!slot) {
+      console.warn(`Slot ${i} does not exist. Skipping.`);
+      continue;
+    }
+    if (entry.pokemon === undefined || entry.pokemon === null) {
+      console.warn(`Slot ${i} has no base Pokémon. Skipping.`);
+      continue;
+    }
+
+    // Step 1: Set base Pokémon
+    const baseIndex = pokemonData.findIndex(p => p.row === entry.pokemon);
+    console.log("Base Pokémon Row:", entry.pokemon, " -> Index:", baseIndex);
+
+    if (baseIndex !== -1) {
+      const baseSelect = slot.querySelector('select');
+      baseSelect.value = baseIndex;
+
+    const selectedPokemon = {
+      ...pokemonData[baseIndex],
+      types: [pokemonData[baseIndex].t1, pokemonData[baseIndex].t2].filter(Boolean)
+    };
+
+    renderPokemonBox(slot, selectedPokemon);
+    console.log("Rendered base Pokémon:", selectedPokemon);
+
+    await new Promise(res => setTimeout(res, 300));
+  } else {
+    console.warn("Base Pokémon not found in data.");
+  }
+
+
+    // Step 2: Set fusion Pokémon
+    if (entry.fusion !== null && entry.fusion !== undefined) {
+      const fusionIndex = pokemonData.findIndex(p => p.row === entry.fusion);
+      console.log("Fusion Pokémon Row:", entry.fusion, " -> Index:", fusionIndex);
+
+      if (fusionIndex !== -1) {
+        const fusionSelect = slot.querySelector('.fusion-container select');
+        fusionSelect.value = fusionIndex;
+        fusionSelect.dispatchEvent(new Event('change'));
+        await new Promise(res => setTimeout(res, 300));
+        console.log("Fusion Pokémon selected:", pokemonData[fusionIndex]);
+      } else {
+        console.warn("Fusion Pokémon not found.");
+      }
+
+      const fusionAbilitySelect = slot.querySelector('.fusion-ability-select')?.tomselect;
+      if (fusionAbilitySelect && entry.fusionAbility !== null) {
+        fusionAbilitySelect.setValue(String(entry.fusionAbility));
+        console.log("Set fusion ability to:", entry.fusionAbility);
+      }
+    }
+
+    // Step 3: Set moves (with checkboxes)
+const moveDropdowns = slot.querySelectorAll('.move-select');
+const moveCheckboxes = slot.querySelectorAll('.move-checkbox');
+
+// Uncheck all move checkboxes before assigning values
+moveCheckboxes.forEach(cb => cb.checked = false);
+
+await Promise.all(
+  (entry.moves || []).map(async (moveId, idx) => {
+    const dropdown = moveDropdowns[idx];
+    const checkbox = moveCheckboxes[idx];
+
+    if (dropdown && moveId !== null) {
+      const ts = await waitForTomSelect(dropdown);
+      if (ts) {
+        ts.setValue(String(moveId));
+        if (checkbox) checkbox.checked = true;
+        console.log(`Set move ${idx + 1} to ID ${moveId}`);
+      }
+    }
+  })
+);
+
+    // Step 4: Set ability
+    const abilitySelect = slot.querySelector('.ability-select')?.tomselect;
+    if (entry.ability !== undefined && entry.ability !== null && abilitySelect) {
+      abilitySelect.setValue(String(entry.ability));
+      console.log("Set base ability to:", entry.ability);
+    }
+
+    // Step 5: Set nature
+    const natureSelect = slot.querySelector('.nature-select')?.tomselect;
+    const natureCheckbox = slot.querySelector('.nature-checkbox');
+
+    // Always uncheck before applying imported value
+    if (natureCheckbox) natureCheckbox.checked = false;
+
+    if (entry.nature && natureSelect && natureCheckbox) {
+      natureCheckbox.checked = true;
+      natureSelect.setValue(entry.nature);
+      console.log("Set nature to:", entry.nature);
+    }
+
+
+    updateTeamSummary();
+    await new Promise(res => setTimeout(res, 150));
+  }
+
+  console.log("Import finished.");
+
   
+}
+
+
+document.getElementById('exportBtn').addEventListener('click', exportTeamToJson);
+document.getElementById('importFile').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const text = await file.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (err) {
+    alert("Invalid JSON file.");
+    return;
+  }
+
+  await importTeamData(data);
+
+  //  Reset checkboxes after everything is imported
+  clearAllCheckboxes();
 });
