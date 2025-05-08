@@ -10,31 +10,53 @@ h1 {
 .team-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+  gap: 16px;
+  padding: 16px;
 }
 .team-slot {
-  background: #1e1e1e;
-  border: 2px dashed #555;
-  padding: 10px;
-  height: 300px;
-  position: relative;
-  cursor: pointer;
-  overflow: auto;
-  color: #e0e0e0;
+  border: 1px dashed #666;
+  padding: 16px;
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 .pokemon-img {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
+  image-rendering: pixelated;
+  margin-bottom: 8px;
+}
+.type-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.type-box {
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  font-size: 0.75rem;
+  text-transform: uppercase;
 }
 .move-select,
-.ability-select,
-select {
-  margin-top: 5px;
+.ability-select {
   width: 100%;
-  background: #2a2a2a;
-  color: #e0e0e0;
-  border: 1px solid #444;
-  padding: 5px;
+  margin-bottom: 8px;
+}
+select {
+  padding: 6px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: none;
+}
+.stats {
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  line-height: 1.4;
 }
 .move-compatible {
   background-color: #2e7d32;
@@ -42,3 +64,125 @@ select {
 .move-incompatible {
   background-color: #ef6c00;
 }
+.move-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.move-select {
+  width: 75%;
+}
+
+.move-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: #5ec86f; /* Nice green check */
+  cursor: pointer;
+}
+.nature-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.nature-select {
+  width: 75%;
+}
+
+.nature-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: #5ec86f;
+  cursor: pointer;
+}
+
+.fusion-container {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #555;
+}
+
+.fusion-container .pokemon-img {
+  max-width: 72px;
+  cursor: pointer;
+}
+
+.fusion-ability-select {
+  margin-top: 6px;
+  width: 75%;
+}
+
+.fusion-ability-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.fusion-ability-select {
+  width: 75%;
+}
+
+.fusion-ability-checkbox {
+  transform: scale(1.2);
+}
+
+.team-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 16px;
+  margin-bottom: 30px;
+}
+
+.summary-box {
+  background-color: #1e1e1e;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.summary-images {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.summary-images img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.summary-types {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.summary-type-box {
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  font-size: 0.75rem;
+}
+
+.summary-stats {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.summary-moves,
+.summary-info {
+  display: flex;
+  justify-content: space-around;
+  gap: 4px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
