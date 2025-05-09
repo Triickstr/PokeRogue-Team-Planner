@@ -257,7 +257,7 @@ const createMoveDropdown = (pokemon) => {
 
 
   const createAbilityDropdown = (pokemon) => {
-    const abilities = [pokemon.a1, pokemon.a2, pokemon.ha].filter(Boolean);
+    const abilities = [pokemon.a1, pokemon.a2, pokemon.ha].filter(type => type != null);
     const sel = document.createElement('select');
     setTimeout(() => new TomSelect(sel, { maxOptions: null }), 0);
     sel.className = 'ability-select';
@@ -371,7 +371,7 @@ const renderFusionInfo = (fusionPoke, slot) => {
   // Types
   const typeContainer = document.createElement('div');
   typeContainer.className = 'type-container';
-  [fusionPoke.t1, fusionPoke.t2].filter(Boolean).forEach(type => {
+  [fusionPoke.t1, fusionPoke.t2].filter(type => type != null).forEach(type => {
     const typeName = window.fidToName?.[type] || `Type ${type}`;
     const typeBox = document.createElement('div');
     typeBox.className = 'type-box';
@@ -394,7 +394,7 @@ const renderFusionInfo = (fusionPoke, slot) => {
   const fusionAbilitySelect = document.createElement('select');
   observeChanges(fusionAbilitySelect);
   fusionAbilitySelect.className = 'fusion-ability-select';
-  const abilities = [fusionPoke.a1, fusionPoke.a2, fusionPoke.ha].filter(Boolean);
+  const abilities = [fusionPoke.a1, fusionPoke.a2, fusionPoke.ha].filter(type => type != null);
   fusionAbilitySelect.innerHTML = abilities.map(a => {
     const name = window.fidToName?.[a] || `Ability ${a}`;
     return `<option value="${a}">${name}</option>`;
@@ -439,7 +439,7 @@ setTimeout(updateTeamSummary, 10);
     slot.appendChild(createPokemonSelector((idx) => {
       const pokemon = {
       ...pokemonData[idx],
-      types: [pokemonData[idx].t1, pokemonData[idx].t2].filter(Boolean)
+      types: [pokemonData[idx].t1, pokemonData[idx].t2].filter(type => type != null)
     };
       renderPokemonBox(slot, pokemon);
     }));
@@ -566,7 +566,7 @@ async function importTeamData(data) {
 
     const selectedPokemon = {
       ...pokemonData[baseIndex],
-      types: [pokemonData[baseIndex].t1, pokemonData[baseIndex].t2].filter(Boolean)
+      types: [pokemonData[baseIndex].t1, pokemonData[baseIndex].t2].filter(type => type != null)
     };
 
     renderPokemonBox(slot, selectedPokemon);
