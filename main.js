@@ -170,19 +170,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Move generation after data is loaded
-  window.allMoves = (() => {
-    const moveSet = new Set();
-    pokemonData.forEach(p => {
-      const exclude = [p.t1, p.t2, p.a1, p.a2, p.ha, p.pa];
-      Object.keys(p).forEach(key => {
-        const val = parseInt(key);
-        if (!isNaN(val) && !exclude.includes(val)) {
+window.allMoves = (() => {
+  const moveSet = new Set();
+
+  pokemonData.forEach(p => {
+    const exclude = [p.t1, p.t2, p.a1, p.a2, p.ha, p.pa];
+    Object.keys(p).forEach(key => {
+      const val = parseInt(key);
+      if (!isNaN(val) && !exclude.includes(val)) {
+        const category = window.catToName?.[val];
+        if (category === 'Move') { // Dynamically confirm it's a move
           moveSet.add(val);
         }
-      });
+      }
     });
-    return Array.from(moveSet);
-  })();
+  });
+
+  return Array.from(moveSet);
+})();
 
   // Create exactly 6 team slots
   for (let i = 0; i < 6; i++) {
@@ -221,40 +226,45 @@ document.addEventListener("DOMContentLoaded", () => {
     return select;
   };
 
+const getValidMoves = () => {
+  const moves = [];
+  let foundStart = false;
+  for (const [fid, name] of Object.entries(window.fidToName || {})) {
+    if (name === 'Tackle') foundStart = true;
+    if (foundStart) moves.push({ id: parseInt(fid), name });
+    if (name === 'Eternabeam') break;
+  }
+  return moves;
+};
+
 const createMoveDropdown = (pokemon) => {
   const sel = document.createElement('select');
-  sel.className = 'move-select';
-
-  sel.innerHTML = '<option value="">Select a Move</option>' +
-    window.allMoves.map(m => {
-      const isCompatible = pokemon && pokemon.hasOwnProperty(String(m));
-      const name = window.fidToName?.[m] || `Move ${m}`;
-      return `<option value="${m}" class="${isCompatible ? 'move-compatible' : 'move-incompatible'}">${name}</option>`;
-    }).join('');
-
-  setTimeout(() => {
-    if (!sel.tomselect) {
-      new TomSelect(sel, {
-        maxOptions: null,
-        render: {
-          option: (data, escape) => {
-            const isCompatible = pokemon && pokemon.hasOwnProperty(data.value);
-            const color = isCompatible ? '#d4edda' : '#ffeeba';
-            return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
-          },
-          item: (data, escape) => {
-            const isCompatible = pokemon && pokemon.hasOwnProperty(data.value);
-            const color = isCompatible ? '#d4edda' : '#ffeeba';
-            return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
-          }
-        }
-      });
+  setTimeout(() => new TomSelect(sel, {
+    maxOptions: null,
+    render: {
+      option: function(data, escape) {
+        const isCompatible = pokemon.hasOwnProperty(data.value);
+        const color = isCompatible ? '#d4edda' : '#ffeeba'; // Green for compatible, yellow for incompatible
+        return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
+      },
+      item: function(data, escape) {
+        const isCompatible = pokemon.hasOwnProperty(data.value);
+        const color = isCompatible ? '#d4edda' : '#ffeeba';
+        return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
+      }
     }
-  }, 0);
+  }), 0);
+
+  sel.className = 'move-select';
+  sel.innerHTML = '<option value="">Select a Move</option>' +
+    getValidMoves().map(m => {
+      const isCompatible = String(m.id) in pokemon; // Check against full Pokémon data
+      const name = m.name;
+      return `<option value="${m.id}" class="${isCompatible ? 'move-compatible' : 'move-incompatible'}">${name}</option>`;
+    }).join('');
 
   return sel;
 };
-
 
   const createAbilityDropdown = (pokemon) => {
     const abilities = [pokemon.a1, pokemon.a2, pokemon.ha].filter(type => type != null);
