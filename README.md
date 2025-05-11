@@ -1,5 +1,7 @@
 # PokéRogue Team Builder
 
+You can access the Planner here: [PokeRogue Team Planner](https://triickstr.github.io/PokeRogue-Team-Planner/)
+
 A simple and powerful tool designed to help both new and experienced players organize and plan their Pokémon teams while playing [PokéRogue](https://pokerogue.net/).
 
 Whether you're theorycrafting future runs or tracking your current setup mid-game, this builder lets you build, export, and re-import your team with ease — including fusion Pokémon, abilities, natures, and more.
