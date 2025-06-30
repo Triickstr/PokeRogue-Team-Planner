@@ -15,12 +15,13 @@ Whether you're theorycrafting future runs or tracking your current setup mid-gam
 - Export your team to a JSON file  
 - Re-import and continue building at any time  
 - Clean summary display for team overview  
+- Held Items planner
+- Tera Typing planner
 
 ---
 
 ## 🧪 Upcoming Features
 
-- **Held Item Planning** per Pokémon
 - TBD
 
 ---
