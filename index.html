@@ -8,14 +8,16 @@
   <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet" />
   <link rel="stylesheet" href="item_popup.css" />
   <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <h1>PokeRogue Team Builder</h1>
 
-  <div id="exportImportControls">
-    <button id="exportBtn">Export Team</button>
-    <input type="file" id="importFile" accept=".json" />
-  </div>
+<div id="exportImportControls" style="display: flex; align-items: center; gap: 10px;">
+  <button onclick="downloadTeamSummaryImage()">Download Summary</button>
+  <button id="exportBtn">Export Team</button>
+  <input type="file" id="importFile" accept=".json" />
+</div>
 
   <div class="team-summary" id="teamSummary"></div>
   <div class="team-grid" id="teamGrid"></div>
