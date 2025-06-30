@@ -20,6 +20,7 @@ async function waitForTomSelect(selectElement, timeout = 1000) {
 
 
 let pokemonData = [];
+let teamItemSelections = [{}, {}, {}, {}, {}, {}];
 window.typeColors = {
   Normal: '#A8A77A',
   Fire: '#EE8130',
@@ -38,7 +39,8 @@ window.typeColors = {
   Dragon: '#6F35FC',
   Dark: '#705746',
   Steel: '#B7B7CE',
-  Fairy: '#D685AD'
+  Fairy: '#D685AD',
+  Stellar: '#40B5A5'
 };
 const updateTeamSummary = () => {
   const summaryContainer = document.getElementById('teamSummary');
@@ -46,16 +48,19 @@ const updateTeamSummary = () => {
 
   document.querySelectorAll('.team-slot').forEach((slot, i) => {
     const summaryBox = document.createElement('div');
-    summaryBox.className = 'summary-box';
+    summaryBox.className = 'summary-box ' + (i % 2 === 0 ? 'summary-box-red' : 'summary-box-blue');
 
     const images = slot.querySelectorAll('img');
     const types = slot.querySelectorAll('.type-box');
     const statText = slot.querySelector('.stats')?.innerText || '';
-    const moveNames = Array.from(slot.querySelectorAll('.move-select')).map(s => {
-      const ts = s.tomselect;
-      const value = ts?.getValue?.();
-      return ts?.getItem?.(value)?.textContent || '—';
-    });
+    const moveNames = Array.from(slot.querySelectorAll('.move-select'))
+      .map(s => {
+        const ts = s.tomselect;
+        const value = ts?.getValue?.();
+        return ts?.options?.[value]?.text || null;
+    })
+    .filter(Boolean); // Remove nulls
+
     let ability = '—';
 
     const fusionAbilitySelect = slot.querySelector('.fusion-ability-select');
@@ -69,6 +74,7 @@ const updateTeamSummary = () => {
       }
     const passiveText = Array.from(slot.childNodes).find(el => el?.innerText?.startsWith('Passive Ability:'))?.innerText.replace('Passive Ability: ', '') || '—';
     const nature = slot.querySelector('.nature-select')?.selectedOptions[0]?.textContent || '—';
+    const teraType = slot.querySelector('.tera-select')?.selectedOptions[0]?.textContent || '—';
 
     const imageRow = document.createElement('div');
     imageRow.className = 'summary-images';
@@ -156,24 +162,139 @@ summaryBox.appendChild(typeRow);
     summaryBox.appendChild(statRow);
 
     const moveRow = document.createElement('div');
-    moveRow.className = 'summary-moves';
-    moveNames.forEach(m => {
-      const div = document.createElement('div');
-      div.textContent = m;
-      moveRow.appendChild(div);
-    });
-    summaryBox.appendChild(moveRow);
+moveRow.className = 'summary-moves';
 
-    const infoRow = document.createElement('div');
-    infoRow.className = 'summary-info';
-    [ability, passiveText, nature].forEach(val => {
-      const div = document.createElement('div');
-      div.textContent = val;
-      infoRow.appendChild(div);
+const baseRow = parseInt(slot.dataset.pokemonRow);
+const fusionRow = parseInt(slot.dataset.fusionRow || -1);
+const basePoke = pokemonData.find(p => p.row === baseRow);
+const fusionPoke = pokemonData.find(p => p.row === fusionRow);
+
+slot.querySelectorAll('.move-select').forEach(select => {
+  const ts = select.tomselect;
+  const value = ts?.getValue?.();
+  const name = ts?.options?.[value]?.text;
+  const moveId = parseInt(value);
+
+  if (name && !isNaN(moveId)) {
+    let color = '#ffeeba'; // default orange
+    if (basePoke?.hasOwnProperty(moveId)) color = '#d4edda'; // green
+    else if (fusionPoke?.hasOwnProperty(moveId)) color = '#fae6fa'; // blue
+
+    const div = document.createElement('div');
+    div.textContent = name;
+    div.style.backgroundColor = color;
+    div.style.color = '#000';
+    div.style.padding = '2px 5px';
+    div.style.margin = '2px 0';
+    div.style.borderRadius = '4px';
+    moveRow.appendChild(div);
+  }
+});
+
+summaryBox.appendChild(moveRow);
+
+
+const infoRowTop = document.createElement('div');
+infoRowTop.className = 'summary-info-row';
+
+const infoRowBottom = document.createElement('div');
+infoRowBottom.className = 'summary-info-row';
+
+[
+  { label: "Ability", value: ability, targetRow: infoRowTop },
+  { label: "Passive", value: passiveText, targetRow: infoRowBottom },
+  { label: "Nature", value: nature, targetRow: infoRowTop },
+  { label: "Tera", value: teraType, targetRow: infoRowBottom }
+].forEach(({ label, value, targetRow }) => {
+  const div = document.createElement('div');
+
+  if (label === "Tera" && value && value !== "—") {
+    const color = window.typeColors?.[value] || '#ccc';
+    div.style.backgroundColor = color;
+    div.style.color = '#000';
+    div.style.padding = '2px 6px';
+    div.style.borderRadius = '4px';
+    div.style.fontWeight = 'bold';
+  }
+
+  div.textContent = `${label}: ${value}`;
+  targetRow.appendChild(div);
+});
+
+summaryBox.appendChild(infoRowTop);
+summaryBox.appendChild(infoRowBottom);
+
+const itemData = teamItemSelections[i];
+if (itemData && Object.values(itemData).some(val => val > 0)) {
+  const itemSections = [
+    { title: "Vitamins", items: ["hp_up", "protein", "iron", "calcium", "zinc", "carbos"] },
+    { title: "Eggs", items: ["lucky_egg", "golden_egg"] },
+    { title: "Special Items", items: ["mega_stone", "max_mushrooms", "reviver_seed"] },
+    { title: "Regular Items", items: [
+      "baton", "eviolite", "focus_band",
+      "flame_orb", "toxic_orb", "soothe_bell",
+      "golden_punch", "grip_claw", "kings_rock",
+      "leftovers", "mini_black_hole", "mystical_rock",
+      "quick_claw", "scope_lens", "shell_bell",
+      "soul_dew", "wide_lens", "zoom_lens"
+    ]}
+  ];
+
+  const itemSectionDiv = document.createElement('div');
+  itemSectionDiv.className = 'summary-items';
+
+  itemSections.forEach(({ title, items }) => {
+    const relevantItems = items.filter(name => itemData[name] > 0);
+    if (relevantItems.length === 0) return;
+
+    const sectionTitle = document.createElement('div');
+    sectionTitle.textContent = title;
+    sectionTitle.style.fontWeight = 'bold';
+    sectionTitle.style.marginTop = '6px';
+    itemSectionDiv.appendChild(sectionTitle);
+
+    const iconRow = document.createElement('div');
+    iconRow.style.display = 'flex';
+    iconRow.style.flexWrap = 'wrap';
+    iconRow.style.gap = '8px';
+    iconRow.style.marginTop = '4px';
+    iconRow.style.alignItems = 'center';
+
+    relevantItems.forEach(name => {
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'flex';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.gap = '4px';
+
+      const icon = document.createElement('img');
+      icon.src = `items/${name}.png`;
+      icon.alt = name;
+      icon.title = name.replace(/_/g, ' ');
+      icon.style.width = '28px';
+      icon.style.height = '28px';
+      icon.style.imageRendering = 'pixelated';
+
+      const quantity = document.createElement('span');
+      quantity.textContent = `x${itemData[name]}`;
+      quantity.style.fontSize = '14px';
+      quantity.style.fontWeight = 'normal';
+
+      wrapper.appendChild(icon);
+      wrapper.appendChild(quantity);
+      iconRow.appendChild(wrapper);
     });
-    summaryBox.appendChild(infoRow);
+
+    itemSectionDiv.appendChild(iconRow);
+  });
+
+  summaryBox.appendChild(itemSectionDiv);
+}
+
     summaryContainer.appendChild(summaryBox);
   });
+
+
+  
 };
 
 const observeChanges = (element) => {
@@ -260,34 +381,48 @@ const getValidMoves = () => {
   return moves;
 };
 
-const createMoveDropdown = (pokemon) => {
+const createMoveDropdown = (basePokemon) => {
   const sel = document.createElement('select');
-  setTimeout(() => new TomSelect(sel, {
-    maxOptions: null,
-    render: {
-      option: function(data, escape) {
-        const isCompatible = pokemon.hasOwnProperty(data.value);
-        const color = isCompatible ? '#d4edda' : '#ffeeba'; // Green for compatible, yellow for incompatible
-        return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
-      },
-      item: function(data, escape) {
-        const isCompatible = pokemon.hasOwnProperty(data.value);
-        const color = isCompatible ? '#d4edda' : '#ffeeba';
-        return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
-      }
-    }
-  }), 0);
-
   sel.className = 'move-select';
-  sel.innerHTML = '<option value="">Select a Move</option>' +
-    getValidMoves().map(m => {
-      const isCompatible = String(m.id) in pokemon; // Check against full Pokémon data
-      const name = m.name;
-      return `<option value="${m.id}" class="${isCompatible ? 'move-compatible' : 'move-incompatible'}">${name}</option>`;
-    }).join('');
+
+  const moves = getValidMoves();
+
+  setTimeout(() => {
+    new TomSelect(sel, {
+      maxOptions: null,
+      render: {
+        option: function (data, escape) {
+          const option = sel.querySelector(`option[value="${data.value}"]`);
+          const color = option?.dataset.color || '#fff';
+          return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
+        },
+        item: function (data, escape) {
+          const option = sel.querySelector(`option[value="${data.value}"]`);
+          const color = option?.dataset.color || '#fff';
+          return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
+        }
+      }
+    });
+  }, 0);
+
+  sel.innerHTML = '<option value="">Select a Move</option>' + moves.map(m => {
+    const isBaseCompatible = basePokemon.hasOwnProperty(m.id);
+    const baseRow = basePokemon.row;
+    const slot = document.querySelector(`.team-slot[data-pokemon-row="${baseRow}"]`);
+    const fusionRow = parseInt(slot?.dataset.fusionRow || -1);
+    const fusionPoke = isNaN(fusionRow) ? null : pokemonData.find(p => p.row === fusionRow);
+    const isFusionCompatible = fusionPoke?.hasOwnProperty(m.id);
+
+    let color = '#ffeeba'; // orange by default
+    if (isBaseCompatible) color = '#d4edda'; // green
+    else if (isFusionCompatible) color = '#fae6fa'; // blue
+
+    return `<option value="${m.id}" data-color="${color}">${m.name}</option>`;
+  }).join('');
 
   return sel;
 };
+
 
   const createAbilityDropdown = (pokemon) => {
     const abilities = [pokemon.a1, pokemon.a2, pokemon.ha].filter(type => type != null);
@@ -382,6 +517,48 @@ const createMoveDropdown = (pokemon) => {
 
     setTimeout(() => new TomSelect(natureSelect, { maxOptions: null }), 0);
 
+    
+    // Add Tera Type Dropdown
+    const teraWrapper = document.createElement('div');
+    teraWrapper.className = 'tera-wrapper';
+
+    const teraSelect = document.createElement('select');
+    teraSelect.className = 'tera-select';
+
+    teraSelect.innerHTML = `<option value="">Select Tera</option>` + 
+      Object.entries(window.typeColors)
+        .map(([type, color]) => 
+          `<option value="${type}" data-color="${color}">${type}</option>`
+        ).join('');
+
+    teraWrapper.appendChild(teraSelect);
+    slot.appendChild(teraWrapper);
+
+    setTimeout(() => {
+      new TomSelect(teraSelect, {
+        maxOptions: null,
+        render: {
+          option: function (data, escape) {
+            const color = data.$option?.dataset.color || '#fff';
+            return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
+          },
+          item: function (data, escape) {
+            const color = data.$option?.dataset.color || '#fff';
+            return `<div style="background-color:${color}; padding:5px;">${escape(data.text)}</div>`;
+          }
+        }
+      });
+    }, 0);
+
+    teraSelect.addEventListener('change', updateTeamSummary);
+
+// Items Pop Up Button
+const itemBtn = document.createElement('button');
+itemBtn.textContent = 'Show Items';
+itemBtn.className = 'show-items-btn';
+itemBtn.onclick = () => openItemPopup(slot);
+slot.appendChild(itemBtn);
+
     // Fusion Pokémon container
 const fusionContainer = document.createElement('div');
 fusionContainer.className = 'fusion-container';
@@ -395,16 +572,27 @@ const renderFusionInfo = (fusionPoke, slot) => {
   img.src = `images/${fusionPoke.img}_0.png`;
   img.className = 'pokemon-img';
   img.onerror = () => img.style.display = 'none';
+
   img.onclick = () => {
+    // ✅ Remove fusion reference
+    delete slot.dataset.fusionRow;
+
+    // ✅ Reset the selector
     renderFusionSelector(slot);
-    setTimeout(updateTeamSummary, 10);  // force re-check
+
+    // ✅ Recompute dropdown colors without fusion
+    updateMoveDropdownColors(slot);
+
+    // ✅ Immediately update the summary visuals
+    updateTeamSummary();
   };
+
   fusionContainer.appendChild(img);
 
   // Types
   const typeContainer = document.createElement('div');
   typeContainer.className = 'type-container';
-  [fusionPoke.t1, fusionPoke.t2].filter(type => type != null).forEach(type => {
+  [fusionPoke.t1, fusionPoke.t2].filter(t => t != null).forEach(type => {
     const typeName = window.fidToName?.[type] || `Type ${type}`;
     const typeBox = document.createElement('div');
     typeBox.className = 'type-box';
@@ -420,14 +608,15 @@ const renderFusionInfo = (fusionPoke, slot) => {
   stats.innerText = `HP: ${fusionPoke.hp}, Atk: ${fusionPoke.atk}, Def: ${fusionPoke.def}, SpA: ${fusionPoke.spa}, SpD: ${fusionPoke.spd}, Spe: ${fusionPoke.spe}`;
   fusionContainer.appendChild(stats);
 
-  // Fusion Ability wrapper
+  // Fusion Ability
   const fusionAbilityWrapper = document.createElement('div');
   fusionAbilityWrapper.className = 'fusion-ability-wrapper';
 
   const fusionAbilitySelect = document.createElement('select');
   observeChanges(fusionAbilitySelect);
   fusionAbilitySelect.className = 'fusion-ability-select';
-  const abilities = [fusionPoke.a1, fusionPoke.a2, fusionPoke.ha].filter(type => type != null);
+
+  const abilities = [fusionPoke.a1, fusionPoke.a2, fusionPoke.ha].filter(a => a != null);
   fusionAbilitySelect.innerHTML = abilities.map(a => {
     const name = window.fidToName?.[a] || `Ability ${a}`;
     return `<option value="${a}">${name}</option>`;
@@ -441,8 +630,15 @@ const renderFusionInfo = (fusionPoke, slot) => {
   fusionAbilityWrapper.appendChild(fusionAbilityCheckbox);
   fusionContainer.appendChild(fusionAbilityWrapper);
 
-  setTimeout(() => new TomSelect(fusionAbilitySelect, { maxOptions: null }), 0);
+  slot.appendChild(fusionContainer);
+
+  setTimeout(() => {
+    new TomSelect(fusionAbilitySelect, { maxOptions: null });
+    updateMoveDropdownColors(slot); // ✅ Update colors now that dropdowns are rendered
+  }, 0);
 };
+
+
 
 const renderFusionSelector = (slot) => {
   fusionContainer.innerHTML = '';
@@ -468,7 +664,7 @@ setTimeout(updateTeamSummary, 10);
 
   const createTeamSlot = () => {
     const slot = document.createElement('div');
-    slot.className = 'team-slot';
+    slot.className = 'team-slot ' + (teamGrid.children.length % 2 === 0 ? 'team-slot-red' : 'team-slot-blue');
     slot.appendChild(createPokemonSelector((idx) => {
       const pokemon = {
       ...pokemonData[idx],
@@ -504,6 +700,7 @@ const exportTeamToJson = () => {
     const baseAbilityParsed = baseAbility ? parseInt(baseAbility) : null;
 
     const nature = slot.querySelector('.nature-select')?.tomselect?.getValue() || null;
+    const tera = slot.querySelector('.tera-select')?.tomselect?.getValue() || null;
 
     // Bulbasaur fallback logic
     const hasAnyMoves = moves.some(m => m !== null && !isNaN(m));
@@ -527,13 +724,17 @@ const exportTeamToJson = () => {
       fusionRow = 0;
     }
 
+    const itemData = { ...teamItemSelections[teamData.length] };
+
     teamData.push({
       pokemon: pokemonRow,
       fusion: fusionRow,
       moves: moves,
       ability: baseAbilityParsed,
       fusionAbility: fusionAbilityParsed,
-      nature
+      nature,
+      tera,
+      items: itemData
     });
   });
 
@@ -573,7 +774,7 @@ async function waitForTomSelect(select, timeout = 1000) {
 async function importTeamData(data) {
   const slots = document.querySelectorAll('.team-slot');
   console.log("Starting import of team data:", data);
-
+  teamItemSelections = [{}, {}, {}, {}, {}, {}];
   for (let i = 0; i < data.length; i++) {
     const entry = data[i];
     const slot = slots[i];
@@ -675,7 +876,23 @@ await Promise.all(
       natureSelect.setValue(entry.nature);
       console.log("Set nature to:", entry.nature);
     }
+    const teraSelect = slot.querySelector('.tera-select')?.tomselect;
+      if (teraSelect && entry.tera) {
+      teraSelect.setValue(entry.tera);
+      console.log("Set Tera to:", entry.tera);
+    }
+    // Restore item selections for this slot if available
+if (entry.items) {
+  teamItemSelections[i] = { ...entry.items };
 
+  // If popup is open, update dropdowns (optional)
+  const isPopupOpen = document.querySelector('.item-popup');
+  if (isPopupOpen) {
+    const popup = isPopupOpen.querySelector('.item-popup');
+    popup.innerHTML = '';
+    renderItemSections(popup, window.itemData, i);
+  }
+}
 
     updateTeamSummary();
     await new Promise(res => setTimeout(res, 150));
@@ -705,3 +922,141 @@ document.getElementById('importFile').addEventListener('change', async (event) =
   //  Reset checkboxes after everything is imported
   clearAllCheckboxes();
 });
+
+
+function updateMoveDropdownColors(slot) {
+  const baseRow = parseInt(slot.dataset.pokemonRow);
+  const fusionRow = parseInt(slot.dataset.fusionRow || -1);
+
+  const basePoke = pokemonData.find(p => p.row === baseRow);
+  const fusionPoke = pokemonData.find(p => p.row === fusionRow);
+
+  slot.querySelectorAll('.move-select').forEach(select => {
+    const ts = select.tomselect;
+    if (!ts) return;
+
+    // Update all option colors
+    for (const option of select.options) {
+      if (!option.value) continue;
+      const moveId = parseInt(option.value);
+
+      const isBase = basePoke?.hasOwnProperty(moveId);
+      const isFusion = fusionPoke?.hasOwnProperty(moveId);
+
+      let color = '#ffeeba'; // default orange
+      if (isBase) color = '#d4edda'; // green
+      else if (isFusion) color = '#fae6fa'; // blue
+
+      option.dataset.color = color;
+
+      // Update visible dropdowns too
+      const optEl = ts.getOption(option.value);
+      const itemEl = ts.getItem(option.value);
+      if (optEl) optEl.style.backgroundColor = color;
+      if (itemEl) itemEl.style.backgroundColor = color;
+    }
+
+    // 🟦 Key fix: force refresh the list of options to re-render the dropdown UI
+    ts.refreshOptions(false);
+  });
+}
+
+async function openItemPopup(slot) {
+  const popup = document.createElement('div');
+  popup.className = 'item-popup';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'item-overlay';
+
+  const closeBtn = document.createElement('span');
+  closeBtn.className = 'item-popup-close';
+  closeBtn.innerHTML = '&times;';
+  closeBtn.onclick = () => document.body.removeChild(overlay);
+
+  popup.appendChild(closeBtn);
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  // Load item data once
+  if (!window.itemData) {
+    const response = await fetch('item_max.json');
+    window.itemData = await response.json();
+  }
+
+  // Get which slot this is
+  const slotIndex = Array.from(document.querySelectorAll('.team-slot')).indexOf(slot);
+
+  // Pass the index to track selections
+  renderItemSections(popup, window.itemData, slotIndex);
+}
+
+function renderItemSections(container, itemData, slotIndex) {
+  const sections = [
+    { title: "Vitamins", layout: [3, 2], items: ["hp_up", "protein", "iron", "calcium", "zinc", "carbos"] },
+    { title: "Eggs", layout: [2, 1], items: ["lucky_egg", "golden_egg"] },
+    { title: "Special Items", layout: [3, 1], items: ["mega_stone", "max_mushrooms", "reviver_seed"] },
+    { title: "Regular Items", layout: [3, 6], items: [
+      "baton", "eviolite", "focus_band",
+      "flame_orb", "toxic_orb", "soothe_bell",
+      "golden_punch", "grip_claw", "kings_rock",
+      "leftovers", "mini_black_hole", "mystical_rock",
+      "quick_claw", "scope_lens", "shell_bell",
+      "soul_dew", "wide_lens", "zoom_lens"
+    ]}
+  ];
+
+  sections.forEach(({ title, layout, items }) => {
+    const section = document.createElement('div');
+    section.className = 'item-section';
+
+    const header = document.createElement('h3');
+    header.textContent = title;
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'item-grid';
+    grid.style.gridTemplateColumns = `repeat(${layout[0]}, 1fr)`;
+
+    items.forEach(name => {
+  const itemDiv = document.createElement('div');
+  itemDiv.className = 'item-entry';
+
+  const img = document.createElement('img');
+  img.src = `items/${name}.png`;
+  img.alt = name;
+  img.title = name;
+  img.className = 'item-img';
+
+  const select = document.createElement('select');
+  select.className = 'item-dropdown';
+
+  const max = parseInt(itemData[name]?.Max || 1);
+  for (let i = 0; i <= max; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = i;
+    select.appendChild(option);
+  }
+
+  // ⬇️ Apply saved value and handle change
+  const savedValue = teamItemSelections[slotIndex]?.[name] ?? 0;
+  select.value = savedValue;
+
+  select.addEventListener('change', (e) => {
+  const value = parseInt(e.target.value);
+  if (!isNaN(value)) {
+    if (!teamItemSelections[slotIndex]) teamItemSelections[slotIndex] = {};
+    teamItemSelections[slotIndex][name] = value;
+    updateTeamSummary();
+  }
+});
+
+  itemDiv.appendChild(img);
+  itemDiv.appendChild(select);
+  grid.appendChild(itemDiv);
+});
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+}

@@ -1,0 +1,89 @@
+{
+    "baton": {
+       "Max": "1"
+    },
+   "eviolite": {
+       "Max": "1"
+    },
+	"flame_orb": {
+       "Max": "1" 
+    },
+   "toxic_orb": {
+       "Max": "1" 
+    },
+    "focus_band": {
+       "Max": "5" 
+    },
+   "golden_punch": {
+       "Max": "5" 
+    },
+	"grip_claw": {
+       "Max": "5" 
+    },
+   "kings_rock": {
+       "Max": "3" 
+    },
+	"leftovers": {
+       "Max": "4" 
+    },
+   "max_mushrooms": {
+       "Max": "1" 
+    },
+	"mega_stone": {
+       "Max": "1" 
+    },
+   "mini_black_hole": {
+       "Max": "1" 
+    },
+    "mystical_rock": {
+       "Max": "2" 
+    },
+   "quick_claw": {
+       "Max": "3" 
+    },
+	"reviver_seed": {
+       "Max": "1" 
+    },
+   "scope_lens": {
+       "Max": "1" 
+    },
+    "shell_bell": {
+       "Max": "4" 
+    },
+   "soothe_bell": {
+       "Max": "3" 
+    },
+	"soul_dew": {
+       "Max": "10" 
+    },
+   "wide_lens": {
+       "Max": "3" 
+    },
+    "zoom_lens": {
+       "Max": "2" 
+    },
+	"lucky_egg": {
+       "Max": "99" 
+    },
+    "golden_egg": {
+       "Max": "99" 
+    },
+	"hp_up": {
+       "Max": "31" 
+    },
+    "protein": {
+       "Max": "31" 
+    },
+	"iron": {
+       "Max": "31" 
+    },
+    "calcium": {
+       "Max": "31" 
+    },
+	"zinc": {
+       "Max": "31" 
+    },
+    "carbos": {
+       "Max": "31" 
+    }
+}

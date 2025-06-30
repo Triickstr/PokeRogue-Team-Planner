@@ -1,0 +1,52 @@
+.item-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 9998;
+}
+
+.item-popup {
+  background: rgba(255, 255, 255, 0.15); /* transparent white */
+  backdrop-filter: blur(16px);           /* frosted glass blur */
+  -webkit-backdrop-filter: blur(16px);   /* Safari support */
+  border-radius: 12px;
+  max-width: 800px;
+  margin: 5% auto;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 90%;
+  position: relative;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); /* optional: nice soft shadow */
+}
+
+.item-popup-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.item-section {
+  margin-bottom: 24px;
+}
+
+.item-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.item-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-img {
+  width: 40px;
+  height: 40px;
+}

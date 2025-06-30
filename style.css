@@ -185,3 +185,34 @@ select {
   flex-wrap: wrap;
   text-align: center;
 }
+
+.team-slot-red {
+  border: 2px dashed #CD5C5C;
+}
+
+.team-slot-blue {
+  border: 2px dashed #9EB9D4;
+}
+
+.summary-box-red {
+  border-color: #CD5C5C;
+}
+
+.summary-box-blue {
+  border-color: #9EB9D4;
+}
+
+#exportImportControls {
+  margin-bottom: 24px;
+}
+
+.move-compatible { background-color: #d4edda; }       /* green */
+.move-fusion-compatible { background-color: #cce5ff; } /* blue */
+.move-incompatible { background-color: #ffeeba; }      /* orange */
+
+.summary-info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 5px;
+}
