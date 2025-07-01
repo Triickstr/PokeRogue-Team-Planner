@@ -1,0 +1,71 @@
+[
+  {
+    "pokemon": 0,
+    "fusion": null,
+    "moves": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {}
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {}
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {}
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {}
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {}
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {}
+  }
+]

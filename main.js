@@ -21,6 +21,7 @@ async function waitForTomSelect(selectElement, timeout = 1000) {
 
 let pokemonData = [];
 let teamItemSelections = [{}, {}, {}, {}, {}, {}];
+let passiveAbilityDisabled = [false, false, false, false, false, false];
 window.typeColors = {
   Normal: '#A8A77A',
   Fire: '#EE8130',
@@ -202,10 +203,10 @@ infoRowBottom.className = 'summary-info-row';
 
 [
   { label: "Ability", value: ability, targetRow: infoRowTop },
-  { label: "Passive", value: passiveText, targetRow: infoRowBottom },
+  { label: "Passive", value: passiveText, targetRow: infoRowBottom, isPassive: true },
   { label: "Nature", value: nature, targetRow: infoRowTop },
   { label: "Tera", value: teraType, targetRow: infoRowBottom }
-].forEach(({ label, value, targetRow }) => {
+].forEach(({ label, value, targetRow, isPassive }) => {
   const div = document.createElement('div');
 
   if (label === "Tera" && value && value !== "—") {
@@ -217,7 +218,13 @@ infoRowBottom.className = 'summary-info-row';
     div.style.fontWeight = 'bold';
   }
 
-  div.textContent = `${label}: ${value}`;
+  // Add passive strikethrough check
+  if (isPassive && passiveAbilityDisabled[i]) {
+    div.innerHTML = `<s>${label}: ${value}</s>`;
+  } else {
+    div.textContent = `${label}: ${value}`;
+  }
+
   targetRow.appendChild(div);
 });
 
@@ -302,6 +309,38 @@ const observeChanges = (element) => {
   element.addEventListener('change', updateTeamSummary);
 };
 
+async function loadPreMadeTeams() {
+  try {
+    const response = await fetch('Teams/teams.json');
+    const teams = await response.json();
+    const dropdown = document.getElementById('preMadeTeamDropdown');
+
+    teams.forEach(team => {
+      const option = document.createElement('option');
+      option.value = team.file;
+      option.textContent = team.name;
+      dropdown.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Failed to load teams.json", err);
+  }
+}
+
+function resetTeamBuilder() {
+  const teamGrid = document.getElementById("teamGrid");
+  const summaryContainer = document.getElementById("teamSummary");
+
+  // Clear item selections and visual areas
+  teamItemSelections = [{}, {}, {}, {}, {}, {}];
+  teamGrid.innerHTML = '';
+  summaryContainer.innerHTML = '';
+
+  // Rebuild 6 fresh team slots
+  for (let i = 0; i < 6; i++) {
+    teamGrid.appendChild(createTeamSlot());
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const teamGrid = document.getElementById("teamGrid");
   teamGrid.innerHTML = '';
@@ -337,6 +376,8 @@ window.allMoves = (() => {
   for (let i = 0; i < 6; i++) {
     teamGrid.appendChild(createTeamSlot());
   }
+
+  loadPreMadeTeams();
 });
 
 
@@ -444,7 +485,11 @@ const createMoveDropdown = (basePokemon) => {
     img.src = `images/${pokemon.img}_0.png`;
     img.className = 'pokemon-img';
     img.onerror = () => img.style.display = 'none';
-    img.onclick = () => slot.replaceWith(createTeamSlot());
+    img.onclick = () => {
+  const newSlot = createTeamSlot();
+  slot.replaceWith(newSlot);
+  updateTeamSummary();
+};
     slot.appendChild(img);
 
   const typeContainer = document.createElement('div');
@@ -486,10 +531,34 @@ const createMoveDropdown = (basePokemon) => {
     slot.appendChild(abilityDropdown);
 
 
-    const passive = document.createElement('div');
-    const passiveName = window.fidToName?.[pokemon.pa] || `Passive ${pokemon.pa}`;
-    passive.innerText = `Passive Ability: ${passiveName}`;
-    slot.appendChild(passive);
+    const passiveWrapper = document.createElement('div');
+passiveWrapper.style.display = 'flex';
+passiveWrapper.style.alignItems = 'center';
+passiveWrapper.style.gap = '6px';
+
+const passiveName = window.fidToName?.[pokemon.pa] || `Passive ${pokemon.pa}`;
+const passiveText = document.createElement('div');
+passiveText.innerText = `Passive Ability: ${passiveName}`;
+passiveWrapper.appendChild(passiveText);
+
+const disableCheckbox = document.createElement('input');
+disableCheckbox.type = 'checkbox';
+disableCheckbox.className = 'disable-passive-checkbox';
+disableCheckbox.title = 'Disable Passive Ability';
+disableCheckbox.dataset.slotIndex = slot.dataset.slotIndex || Array.from(document.querySelectorAll('.team-slot')).indexOf(slot);
+
+// Track slot index
+const index = parseInt(disableCheckbox.dataset.slotIndex);
+disableCheckbox.checked = passiveAbilityDisabled[index] || false;
+
+// Update state on change
+disableCheckbox.addEventListener('change', () => {
+  passiveAbilityDisabled[index] = disableCheckbox.checked;
+  updateTeamSummary();
+});
+
+passiveWrapper.appendChild(disableCheckbox);
+slot.appendChild(passiveWrapper);
 
       const natureWrapper = document.createElement('div');
     natureWrapper.className = 'nature-wrapper';
@@ -574,16 +643,16 @@ const renderFusionInfo = (fusionPoke, slot) => {
   img.onerror = () => img.style.display = 'none';
 
   img.onclick = () => {
-    // ✅ Remove fusion reference
+    // Remove fusion reference
     delete slot.dataset.fusionRow;
 
-    // ✅ Reset the selector
+    // Reset the selector
     renderFusionSelector(slot);
 
-    // ✅ Recompute dropdown colors without fusion
+    // Recompute dropdown colors without fusion
     updateMoveDropdownColors(slot);
 
-    // ✅ Immediately update the summary visuals
+    // Immediately update the summary visuals
     updateTeamSummary();
   };
 
@@ -634,7 +703,7 @@ const renderFusionInfo = (fusionPoke, slot) => {
 
   setTimeout(() => {
     new TomSelect(fusionAbilitySelect, { maxOptions: null });
-    updateMoveDropdownColors(slot); // ✅ Update colors now that dropdowns are rendered
+    updateMoveDropdownColors(slot); // Update colors now that dropdowns are rendered
   }, 0);
 };
 
@@ -725,7 +794,7 @@ const exportTeamToJson = () => {
     }
 
     const itemData = { ...teamItemSelections[teamData.length] };
-
+    const passiveCheckbox = slot.querySelector('.disable-passive-checkbox');
     teamData.push({
       pokemon: pokemonRow,
       fusion: fusionRow,
@@ -734,7 +803,8 @@ const exportTeamToJson = () => {
       fusionAbility: fusionAbilityParsed,
       nature,
       tera,
-      items: itemData
+      items: itemData,
+      disabledPassive: passiveCheckbox?.checked || false
     });
   });
 
@@ -750,6 +820,11 @@ const exportTeamToJson = () => {
 function clearAllCheckboxes() {
   document.querySelectorAll('.move-checkbox, .nature-checkbox, .fusion-ability-checkbox').forEach(cb => {
     cb.checked = false;
+  });
+
+  // Restore disabled passive state from passiveAbilityDisabled array
+  document.querySelectorAll('.disable-passive-checkbox').forEach((cb, i) => {
+    cb.checked = passiveAbilityDisabled[i] || false;
   });
 }
 
@@ -872,14 +947,28 @@ async function importTeamData(data) {
       console.log("Set nature to:", entry.nature);
     }
 
-    // ✅ Handle optional Tera value (may be missing)
+    const passiveCheckbox = slot.querySelector('.disable-passive-checkbox');
+    if (passiveCheckbox) {
+      if ('disabledPassive' in entry) {
+    passiveCheckbox.checked = !!entry.disabledPassive;
+    console.log("Set disable passive to:", passiveCheckbox.checked);
+  } else {
+    passiveCheckbox.checked = false; // fallback for older exports
+    console.log("Old file: disable passive defaulted to false");
+  }
+
+  // Trigger summary update to reflect strike-through
+  passiveCheckbox.dispatchEvent(new Event('change'));
+}
+
+    // Handle optional Tera value (may be missing)
     const teraSelect = slot.querySelector('.tera-select')?.tomselect;
     if (teraSelect && entry.tera) {
       teraSelect.setValue(entry.tera);
       console.log("Set Tera to:", entry.tera);
     }
 
-    // ✅ Handle optional items (may be missing)
+    // Handle optional items (may be missing)
     if (entry.items) {
       teamItemSelections[i] = { ...entry.items };
 
@@ -913,12 +1002,44 @@ document.getElementById('importFile').addEventListener('change', async (event) =
     return;
   }
 
+  // Reset everything before importing
+  resetTeamBuilder();
+
+  // Wait for DOM reset to fully apply
+  await new Promise(res => setTimeout(res, 100));
+
+  // Proceed with importing
   await importTeamData(data);
 
-  //  Reset checkboxes after everything is imported
+  // Uncheck all optional checkboxes
   clearAllCheckboxes();
 });
 
+document.getElementById('preMadeTeamDropdown').addEventListener('change', async (event) => {
+  const fileName = event.target.value;
+  if (!fileName) return;
+
+  try {
+    // Step 1: Clear builder
+    resetTeamBuilder();
+
+    // Optional wait to ensure DOM is ready
+    await new Promise(res => setTimeout(res, 100));
+
+    //  Step 2: Fetch and parse the team file
+    const response = await fetch(`Teams/${fileName}`);
+    const teamData = await response.json();
+
+    // Step 3: Import into builder
+    await importTeamData(teamData);
+
+    //  Step 4: Clear checkboxes
+    clearAllCheckboxes();
+  } catch (err) {
+    console.error("Failed to load or import team:", err);
+    alert("Failed to load team. Please try again.");
+  }
+});
 
 function updateMoveDropdownColors(slot) {
   const baseRow = parseInt(slot.dataset.pokemonRow);
@@ -952,7 +1073,7 @@ function updateMoveDropdownColors(slot) {
       if (itemEl) itemEl.style.backgroundColor = color;
     }
 
-    // 🟦 Key fix: force refresh the list of options to re-render the dropdown UI
+    // Key fix: force refresh the list of options to re-render the dropdown UI
     ts.refreshOptions(false);
   });
 }
@@ -1034,7 +1155,7 @@ function renderItemSections(container, itemData, slotIndex) {
     select.appendChild(option);
   }
 
-  // ⬇️ Apply saved value and handle change
+  // Apply saved value and handle change
   const savedValue = teamItemSelections[slotIndex]?.[name] ?? 0;
   select.value = savedValue;
 
