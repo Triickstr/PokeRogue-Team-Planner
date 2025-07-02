@@ -1,0 +1,121 @@
+[
+  {
+    "pokemon": 954,
+    "fusion": 27,
+    "moves": [
+      894,
+      null,
+      907,
+      null,
+      710,
+      null,
+      953,
+      null
+    ],
+    "ability": 98,
+    "fusionAbility": 56,
+    "nature": "Jolly",
+    "tera": "Ghost",
+    "items": {
+      "lucky_egg": 99,
+      "golden_egg": 40,
+      "carbos": 31,
+      "soul_dew": 10,
+      "wide_lens": 3,
+      "zoom_lens": 2,
+      "kings_rock": 3,
+      "mini_black_hole": 1
+    }
+  },
+  {
+    "pokemon": 282,
+    "fusion": 768,
+    "moves": [
+      809,
+      null,
+      1066,
+      null,
+      558,
+      null,
+      430,
+      null
+    ],
+    "ability": 192,
+    "fusionAbility": 56,
+    "nature": "Timid",
+    "tera": "Ghost",
+    "items": {
+      "mini_black_hole": 1,
+      "zoom_lens": 2
+    }
+  },
+  {
+    "pokemon": 700,
+    "fusion": 569,
+    "moves": [
+      804,
+      null,
+      332,
+      null,
+      538,
+      null,
+      1046,
+      null
+    ],
+    "ability": 256,
+    "fusionAbility": 45,
+    "nature": "Jolly",
+    "tera": "Ghost",
+    "items": {
+      "wide_lens": 2,
+      "leftovers": 4
+    }
+  },
+  {
+    "pokemon": 811,
+    "fusion": 601,
+    "moves": [
+      825,
+      null,
+      607,
+      null,
+      430,
+      null,
+      494,
+      null
+    ],
+    "ability": 48,
+    "fusionAbility": 222,
+    "nature": "Timid",
+    "tera": "Ghost",
+    "items": {
+      "soul_dew": 10,
+      "carbos": 31,
+      "mystical_rock": 2,
+      "mini_black_hole": 1,
+      "grip_claw": 5,
+      "lucky_egg": 99,
+      "golden_egg": 40
+    }
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {}
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {}
+  }
+]
