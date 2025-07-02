@@ -1,0 +1,143 @@
+[
+  {
+    "pokemon": 601,
+    "fusion": 1374,
+    "moves": [
+      825,
+      null,
+      717,
+      null,
+      538,
+      null,
+      494,
+      null
+    ],
+    "ability": 222,
+    "fusionAbility": 45,
+    "nature": "Jolly",
+    "tera": "Rock",
+    "items": {
+      "carbos": 31,
+      "lucky_egg": 99,
+      "golden_egg": 40,
+      "reviver_seed": 0,
+      "mystical_rock": 2,
+      "soul_dew": 10
+    },
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 765,
+    "fusion": 68,
+    "moves": [
+      907,
+      null,
+      894,
+      null,
+      774,
+      null,
+      675,
+      null
+    ],
+    "ability": 87,
+    "fusionAbility": 96,
+    "nature": "Jolly",
+    "tera": "Ghost",
+    "items": {
+      "carbos": 31,
+      "golden_egg": 40,
+      "lucky_egg": 99,
+      "soul_dew": 10,
+      "leftovers": 1
+    },
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 282,
+    "fusion": 68,
+    "moves": [
+      809,
+      null,
+      558,
+      null,
+      430,
+      null,
+      365,
+      null
+    ],
+    "ability": 192,
+    "fusionAbility": 96,
+    "nature": "Jolly",
+    "tera": "Ghost",
+    "items": {
+      "zoom_lens": 2,
+      "grip_claw": 5,
+      "leftovers": 1,
+      "reviver_seed": 1
+    },
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 302,
+    "fusion": 364,
+    "moves": [
+      775,
+      null,
+      490,
+      null,
+      519,
+      null,
+      732,
+      null
+    ],
+    "ability": 120,
+    "fusionAbility": 220,
+    "nature": "Calm",
+    "tera": "Bug",
+    "items": {
+      "reviver_seed": 1
+    },
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 265,
+    "fusion": 140,
+    "moves": [
+      795,
+      null,
+      688,
+      null,
+      663,
+      null,
+      365,
+      null
+    ],
+    "ability": 202,
+    "fusionAbility": 123,
+    "nature": "Quiet",
+    "tera": "Electric",
+    "items": {
+      "hp_up": 31,
+      "lucky_egg": 99,
+      "golden_egg": 99,
+      "mega_stone": 1,
+      "reviver_seed": 1,
+      "leftovers": 4,
+      "shell_bell": 4,
+      "zoom_lens": 2,
+      "soul_dew": 7
+    },
+    "disabledPassive": false
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  }
+]
