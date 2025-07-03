@@ -1,3 +1,11 @@
 [
-  { "name": "[Staller] Greninja", "file": "staller.json", "filters": ["Staller"] }
+  {
+    "name": "[Staller] Greninja",
+    "file": "staller.json",
+    "filters": {
+      "Type": "Full Build",
+      "Difficulty": "Medium",
+      "Role": "Staller"
+    }
+  }
 ]

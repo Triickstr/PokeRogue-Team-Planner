@@ -317,59 +317,97 @@ async function loadPreMadeTeams() {
     const filterDropdown = document.getElementById('preMadeTeamFilter');
     const teamDropdown = document.getElementById('preMadeTeamDropdown');
 
-    // Step 1: Clear both dropdowns
+    // Clear both dropdowns
     filterDropdown.innerHTML = '';
     teamDropdown.innerHTML = '<option value="">Load Pre-Made Team</option>';
 
-    // Step 2: Extract unique filters
-    const filterSet = new Set();
+    // Step 1: Extract filters by category
+    const filterMap = { Type: new Set(), Difficulty: new Set() };
+
     teams.forEach(team => {
-      (team.filters || []).forEach(f => filterSet.add(f));
+      const filters = team.filters || {};
+      if (filters.Type) filterMap.Type.add(filters.Type);
+      if (filters.Difficulty) filterMap.Difficulty.add(filters.Difficulty);
     });
 
-    const allFilters = Array.from(filterSet).sort(); // No more "All Teams"
+    // Step 2: Create sorted list with desired order
+    const orderedFilters = [
+      ...Array.from(filterMap.Type).sort().map(v => ({ category: 'Type', value: v })),
+      ...Array.from(filterMap.Difficulty).sort().map(v => ({ category: 'Difficulty', value: v }))
+    ];
 
     // Step 3: Populate filter dropdown
-    allFilters.forEach(f => {
+    orderedFilters.forEach(({ category, value }) => {
       const opt = document.createElement('option');
-      opt.value = f;
-      opt.textContent = f;
+      opt.value = `${category}:${value}`; // e.g., "Type:Full Comp"
+      opt.textContent = value;
       filterDropdown.appendChild(opt);
     });
 
-    // Step 4: Initialize TomSelect
+    // Step 4: TomSelect setup
     if (filterDropdown.tomselect) {
       filterDropdown.tomselect.destroy();
     }
 
-    new TomSelect(filterDropdown, {
-      plugins: ['remove_button'],
-      maxItems: 2,
-      placeholder: 'Filter Options',
-      maxOptions: 100,
-      onChange: (values) => {
-        if (!Array.isArray(values)) values = [values];
+new TomSelect(filterDropdown, {
+  plugins: ['remove_button'],
+  placeholder: 'Select Type & Difficulty',
+  maxOptions: 100,
+  render: {
+    option: function(data, escape) {
+      const [category] = data.value.split(':');
+      const bgColor = category === 'Type' ? '#f8d7da' : '#d1ecf1';
+      return `<div style="background-color:${bgColor}; padding: 4px;">${escape(data.text)}</div>`;
+    },
+    item: function(data, escape) {
+      const [category] = data.value.split(':');
+      const bgColor = category === 'Type' ? '#f8d7da' : '#d1ecf1';
+      return `<div style="background-color:${bgColor}; padding: 2px 6px; border-radius: 4px;">${escape(data.text)}</div>`;
+    }
+  },
+  onChange: (values) => {
+    if (!Array.isArray(values)) values = [values];
 
-        if (values.length === 0) {
-          populateTeamDropdown(teams);
-        } else {
-          const filtered = teams.filter(team =>
-            values.every(f => team.filters.includes(f))
-          );
-          populateTeamDropdown(filtered);
-        }
+    // Keep only one per category
+    const seen = {};
+    const pruned = [];
+    for (let i = values.length - 1; i >= 0; i--) {
+      const [cat, val] = values[i].split(':');
+      if (!seen[cat]) {
+        seen[cat] = true;
+        pruned.unshift(values[i]);
       }
-    });
+    }
 
-    // Step 5: Store globally
+    if (filterDropdown.tomselect) {
+      filterDropdown.tomselect.setValue(pruned, true);
+    }
+
+    if (pruned.length === 0) {
+      populateTeamDropdown(window.allPreMadeTeams);
+    } else {
+      const selected = pruned.map(v => {
+        const [category, val] = v.split(':');
+        return { category, val };
+      });
+
+      const filtered = window.allPreMadeTeams.filter(team =>
+        selected.every(sel => team.filters?.[sel.category] === sel.val)
+      );
+
+      populateTeamDropdown(filtered);
+    }
+  }
+});
+
+    // Store globally and load initially
     window.allPreMadeTeams = teams;
-
-    // Step 6: Load all teams by default
     populateTeamDropdown(teams);
   } catch (err) {
     console.error("Failed to load teams.json", err);
   }
 }
+
 
 function populateTeamDropdown(teamList) {
   const teamDropdown = document.getElementById('preMadeTeamDropdown');
@@ -422,56 +460,102 @@ async function populatePreMadePokemonDropdown() {
     const response = await fetch('Pokemons/pokemons.json');
     const list = await response.json();
 
+    // Store globally
     window.allPreMadePokemons = list;
 
-    // Step 1: Extract unique filters
-    const filterSet = new Set();
-    list.forEach(p => {
-      (p.filters || []).forEach(f => filterSet.add(f));
+    // Step 1: Extract unique filter values by category
+    const filterMap = { Type: new Set(), Difficulty: new Set(), Role: new Set() };
+
+    list.forEach(pokemon => {
+      const filters = pokemon.filters || {};
+      if (filters.Type) filterMap.Type.add(filters.Type);
+      if (filters.Difficulty) filterMap.Difficulty.add(filters.Difficulty);
+      if (filters.Role) filterMap.Role.add(filters.Role);
     });
 
-    const allFilters = Array.from(filterSet).sort(); // Removed "All Pokémon"
+    // Step 2: Build ordered filter list
+    const orderedFilters = [
+      ...Array.from(filterMap.Type).sort().map(v => ({ category: 'Type', value: v })),
+      ...Array.from(filterMap.Difficulty).sort().map(v => ({ category: 'Difficulty', value: v })),
+      ...Array.from(filterMap.Role).sort().map(v => ({ category: 'Role', value: v }))
+    ];
 
-    // Step 2: Populate dropdown
+    // Step 3: Populate filter dropdown
     filterDropdown.innerHTML = '';
-    allFilters.forEach(f => {
+    orderedFilters.forEach(({ category, value }) => {
       const opt = document.createElement('option');
-      opt.value = f;
-      opt.textContent = f;
+      opt.value = `${category}:${value}`;
+      opt.textContent = value;
       filterDropdown.appendChild(opt);
     });
 
-    // Step 3: Apply TomSelect
+    // Step 4: Setup TomSelect
     if (filterDropdown.tomselect) {
       filterDropdown.tomselect.destroy();
     }
 
     new TomSelect(filterDropdown, {
       plugins: ['remove_button'],
-      maxItems: 2,
-      placeholder: 'Filter Options',
+      placeholder: 'Select Type, Difficulty, and Role',
       maxOptions: 100,
+      render: {
+        option: function(data, escape) {
+          const [category] = data.value.split(':');
+          const bgColor = category === 'Type' ? '#f8d7da'
+                         : category === 'Difficulty' ? '#d1ecf1'
+                         : '#e2d6f3'; // Role
+          return `<div style="background-color:${bgColor}; padding: 4px;">${escape(data.text)}</div>`;
+        },
+        item: function(data, escape) {
+          const [category] = data.value.split(':');
+          const bgColor = category === 'Type' ? '#f8d7da'
+                         : category === 'Difficulty' ? '#d1ecf1'
+                         : '#e2d6f3'; // Role
+          return `<div style="background-color:${bgColor}; padding: 2px 6px; border-radius: 4px;">${escape(data.text)}</div>`;
+        }
+      },
       onChange: (values) => {
         if (!Array.isArray(values)) values = [values];
 
-        if (values.length === 0) {
+        // Enforce one per category
+        const seen = {};
+        const pruned = [];
+        for (let i = values.length - 1; i >= 0; i--) {
+          const [cat, val] = values[i].split(':');
+          if (!seen[cat]) {
+            seen[cat] = true;
+            pruned.unshift(values[i]);
+          }
+        }
+
+        if (filterDropdown.tomselect) {
+          filterDropdown.tomselect.setValue(pruned, true);
+        }
+
+        // Filter Pokémon based on selected filters
+        if (pruned.length === 0) {
           populateFilteredPokemonDropdown(window.allPreMadePokemons);
         } else {
+          const selected = pruned.map(v => {
+            const [category, val] = v.split(':');
+            return { category, val };
+          });
+
           const filtered = window.allPreMadePokemons.filter(pokemon =>
-            values.every(f => pokemon.filters.includes(f))
+            selected.every(sel => pokemon.filters?.[sel.category] === sel.val)
           );
+
           populateFilteredPokemonDropdown(filtered);
         }
       }
     });
 
-    // Step 4: Initial load
+    // Step 5: Load all Pokémon by default
     populateFilteredPokemonDropdown(list);
   } catch (e) {
     console.error("Failed to load pre-made Pokémon list:", e);
   }
 }
-
 
 function populateFilteredPokemonDropdown(list) {
   const pokemonDropdown = document.getElementById('preMadePokemonDropdown');

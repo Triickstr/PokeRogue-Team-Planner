@@ -1,6 +1,34 @@
 [
-  { "name": "Entrainment Normalize by Grex", "file": "[MEDIUM] Entrainment Normalize by Grex.json", "filters": ["Medium", "Full Comp"] },
-  { "name": "Prankster Quash + Entrainment by nonono", "file": "[MEDIUM] Prankster Quash + Entrainment Sturdy by nonono.json", "filters": ["Medium", "Full Comp"] },
-  { "name": "Test Example", "file": "example.json", "filters": ["Easy", "Starters"] },
-  { "name": "Test 2 Example", "file": "metal_burst.json", "filters": ["Easy", "Full Comp"] }
+  {
+    "name": "Entrainment Normalize by Grex",
+    "file": "[MEDIUM] Entrainment Normalize by Grex.json",
+    "filters": {
+      "Difficulty": "Medium",
+      "Type": "Full Comp"
+    }
+  },
+  {
+    "name": "Prankster Quash + Entrainment by nonono",
+    "file": "[MEDIUM] Prankster Quash + Entrainment Sturdy by nonono.json",
+    "filters": {
+      "Difficulty": "Medium",
+      "Type": "Full Comp"
+    }
+  },
+  {
+    "name": "Test Example",
+    "file": "example.json",
+    "filters": {
+      "Difficulty": "Easy",
+      "Type": "Starters"
+    }
+  },
+  {
+    "name": "Test 2 Example",
+    "file": "metal_burst.json",
+    "filters": {
+      "Difficulty": "Easy",
+      "Type": "Full Comp"
+    }
+  }
 ]
