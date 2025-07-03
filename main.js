@@ -313,17 +313,73 @@ async function loadPreMadeTeams() {
   try {
     const response = await fetch('Teams/teams.json');
     const teams = await response.json();
-    const dropdown = document.getElementById('preMadeTeamDropdown');
 
+    const filterDropdown = document.getElementById('preMadeTeamFilter');
+    const teamDropdown = document.getElementById('preMadeTeamDropdown');
+
+    // Step 1: Clear both dropdowns
+    filterDropdown.innerHTML = '';
+    teamDropdown.innerHTML = '<option value="">Load Pre-Made Team</option>';
+
+    // Step 2: Extract unique filters
+    const filterSet = new Set();
     teams.forEach(team => {
-      const option = document.createElement('option');
-      option.value = team.file;
-      option.textContent = team.name;
-      dropdown.appendChild(option);
+      (team.filters || []).forEach(f => filterSet.add(f));
     });
+
+    const allFilters = Array.from(filterSet).sort(); // No more "All Teams"
+
+    // Step 3: Populate filter dropdown
+    allFilters.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f;
+      filterDropdown.appendChild(opt);
+    });
+
+    // Step 4: Initialize TomSelect
+    if (filterDropdown.tomselect) {
+      filterDropdown.tomselect.destroy();
+    }
+
+    new TomSelect(filterDropdown, {
+      plugins: ['remove_button'],
+      maxItems: 3,
+      placeholder: 'Filter Options',
+      maxOptions: 100,
+      onChange: (values) => {
+        if (!Array.isArray(values)) values = [values];
+
+        if (values.length === 0) {
+          populateTeamDropdown(teams);
+        } else {
+          const filtered = teams.filter(team =>
+            values.every(f => team.filters.includes(f))
+          );
+          populateTeamDropdown(filtered);
+        }
+      }
+    });
+
+    // Step 5: Store globally
+    window.allPreMadeTeams = teams;
+
+    // Step 6: Load all teams by default
+    populateTeamDropdown(teams);
   } catch (err) {
     console.error("Failed to load teams.json", err);
   }
+}
+
+function populateTeamDropdown(teamList) {
+  const teamDropdown = document.getElementById('preMadeTeamDropdown');
+  teamDropdown.innerHTML = '<option value="">Load Pre-Made Team</option>';
+  teamList.forEach(team => {
+    const opt = document.createElement('option');
+    opt.value = team.file;
+    opt.textContent = team.name;
+    teamDropdown.appendChild(opt);
+  });
 }
 
 function resetTeamBuilder() {
@@ -339,6 +395,93 @@ function resetTeamBuilder() {
   for (let i = 0; i < 6; i++) {
     teamGrid.appendChild(createTeamSlot());
   }
+}
+
+function resetSingleSlot(slotIndex) {
+  const slots = document.querySelectorAll('.team-slot');
+  const slot = slots[slotIndex];
+  if (!slot) return;
+
+  // Reset internal data
+  teamItemSelections[slotIndex] = {};
+  passiveAbilityDisabled[slotIndex] = false;
+
+  // Replace with new clean slot
+  const newSlot = createTeamSlot();
+  slots[slotIndex].replaceWith(newSlot);
+
+  // Update summary after change
+  updateTeamSummary();
+}
+
+async function populatePreMadePokemonDropdown() {
+  const filterDropdown = document.getElementById('preMadePkmFilter');
+  const pokemonDropdown = document.getElementById('preMadePokemonDropdown');
+
+  try {
+    const response = await fetch('Pokemons/pokemons.json');
+    const list = await response.json();
+
+    window.allPreMadePokemons = list;
+
+    // Step 1: Extract unique filters
+    const filterSet = new Set();
+    list.forEach(p => {
+      (p.filters || []).forEach(f => filterSet.add(f));
+    });
+
+    const allFilters = Array.from(filterSet).sort(); // Removed "All Pokémon"
+
+    // Step 2: Populate dropdown
+    filterDropdown.innerHTML = '';
+    allFilters.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f;
+      filterDropdown.appendChild(opt);
+    });
+
+    // Step 3: Apply TomSelect
+    if (filterDropdown.tomselect) {
+      filterDropdown.tomselect.destroy();
+    }
+
+    new TomSelect(filterDropdown, {
+      plugins: ['remove_button'],
+      maxItems: 3,
+      placeholder: 'Filter Options',
+      maxOptions: 100,
+      onChange: (values) => {
+        if (!Array.isArray(values)) values = [values];
+
+        if (values.length === 0) {
+          populateFilteredPokemonDropdown(window.allPreMadePokemons);
+        } else {
+          const filtered = window.allPreMadePokemons.filter(pokemon =>
+            values.every(f => pokemon.filters.includes(f))
+          );
+          populateFilteredPokemonDropdown(filtered);
+        }
+      }
+    });
+
+    // Step 4: Initial load
+    populateFilteredPokemonDropdown(list);
+  } catch (e) {
+    console.error("Failed to load pre-made Pokémon list:", e);
+  }
+}
+
+
+function populateFilteredPokemonDropdown(list) {
+  const pokemonDropdown = document.getElementById('preMadePokemonDropdown');
+  pokemonDropdown.innerHTML = '<option value="">Select Pre-Made Pokémon</option>';
+  list.forEach(entry => {
+    const opt = document.createElement('option');
+    opt.value = entry.file;
+    opt.textContent = entry.name;
+    pokemonDropdown.appendChild(opt);
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -378,6 +521,17 @@ window.allMoves = (() => {
   }
 
   loadPreMadeTeams();
+
+  populatePreMadePokemonDropdown();
+
+  // If you haven’t already:
+  const slotDropdown = document.getElementById('SlotSelector');
+  for (let i = 1; i <= 6; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `Slot ${i}`;
+    slotDropdown.appendChild(opt);
+  }
 });
 
 
@@ -828,6 +982,22 @@ function clearAllCheckboxes() {
   });
 }
 
+function clearSlotCheckboxes(slotIndex) {
+  const slot = document.querySelectorAll('.team-slot')[slotIndex];
+  if (!slot) return;
+
+  // Uncheck move, nature, and fusion ability checkboxes
+  slot.querySelectorAll('.move-checkbox, .nature-checkbox, .fusion-ability-checkbox')
+    .forEach(cb => cb.checked = false);
+
+  // Restore passive checkbox based on stored value
+  const passiveCheckbox = slot.querySelector('.disable-passive-checkbox');
+  if (passiveCheckbox) {
+    passiveCheckbox.checked = passiveAbilityDisabled[slotIndex] || false;
+  }
+}
+
+
 
 //  Basic import logic using .row field matching
 async function waitForTomSelect(select, timeout = 1000) {
@@ -1198,3 +1368,211 @@ function downloadTeamSummaryImage() {
     console.error("Failed to capture image:", err);
   });
 }
+
+//EXPORT POKEMON FUNCTION
+document.getElementById('exportPkm').addEventListener('click', () => {
+  const slot = document.querySelector('.team-slot');
+  if (!slot) return alert("No Pokémon found in the first slot.");
+
+  const baseSelect = slot.querySelector('select');
+  const selectedPokemon = pokemonData[baseSelect?.value];
+  let pokemonRow = parseInt(slot.dataset.pokemonRow);
+  pokemonRow = isNaN(pokemonRow) ? null : pokemonRow;
+
+  const moveSelects = slot.querySelectorAll('.move-select');
+  const moves = Array.from(moveSelects).map((s) => {
+    const ts = s.tomselect;
+    const val = ts?.getValue();
+    return val !== '' ? parseInt(val) : null;
+  });
+
+  const baseAbility = slot.querySelector('.ability-select')?.tomselect?.getValue();
+  const baseAbilityParsed = baseAbility ? parseInt(baseAbility) : null;
+
+  const nature = slot.querySelector('.nature-select')?.tomselect?.getValue() || null;
+  const tera = slot.querySelector('.tera-select')?.tomselect?.getValue() || null;
+
+  if (pokemonRow === null && (moves.some(m => m !== null) || baseAbilityParsed !== null || nature)) {
+    pokemonRow = 0; // fallback to Bulbasaur
+  }
+
+  const fusionSelect = slot.querySelector('.fusion-container select');
+  const selectedFusion = pokemonData[fusionSelect?.value];
+  let fusionRow = parseInt(slot.dataset.fusionRow);
+  fusionRow = isNaN(fusionRow) ? null : fusionRow;
+
+  const fusionAbility = slot.querySelector('.fusion-ability-select')?.tomselect?.getValue();
+  const fusionAbilityParsed = fusionAbility ? parseInt(fusionAbility) : null;
+
+  if (fusionRow === null && fusionAbilityParsed !== null) {
+    fusionRow = 0;
+  }
+
+  const passiveCheckbox = slot.querySelector('.disable-passive-checkbox');
+
+  const itemData = { ...teamItemSelections[0] };
+
+  const singleData = [{
+    pokemon: pokemonRow,
+    fusion: fusionRow,
+    moves,
+    ability: baseAbilityParsed,
+    fusionAbility: fusionAbilityParsed,
+    nature,
+    tera,
+    items: itemData,
+    disabledPassive: passiveCheckbox?.checked || false
+  }];
+
+  const blob = new Blob([JSON.stringify(singleData, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "single_pokemon.json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+async function importPokemonToSlot(slotIndex, entry) {
+  const slots = document.querySelectorAll('.team-slot');
+  const slot = slots[slotIndex];
+  if (!slot) return;
+
+  if (entry.pokemon === undefined || entry.pokemon === null) return;
+
+  // Set base Pokémon
+  const baseIndex = pokemonData.findIndex(p => p.row === entry.pokemon);
+  if (baseIndex !== -1) {
+    const baseSelect = slot.querySelector('select');
+    baseSelect.value = baseIndex;
+
+    const selectedPokemon = {
+      ...pokemonData[baseIndex],
+      types: [pokemonData[baseIndex].t1, pokemonData[baseIndex].t2].filter(type => type != null)
+    };
+
+    renderPokemonBox(slot, selectedPokemon);
+    await new Promise(res => setTimeout(res, 300));
+  }
+
+  // Fusion
+  if (entry.fusion !== null && entry.fusion !== undefined) {
+    const fusionIndex = pokemonData.findIndex(p => p.row === entry.fusion);
+    if (fusionIndex !== -1) {
+      const fusionSelect = slot.querySelector('.fusion-container select');
+      fusionSelect.value = fusionIndex;
+      fusionSelect.dispatchEvent(new Event('change'));
+      await new Promise(res => setTimeout(res, 300));
+    }
+
+    const fusionAbilitySelect = slot.querySelector('.fusion-ability-select')?.tomselect;
+    if (fusionAbilitySelect && entry.fusionAbility !== null) {
+      fusionAbilitySelect.setValue(String(entry.fusionAbility));
+    }
+  }
+
+  // Moves
+  const moveDropdowns = slot.querySelectorAll('.move-select');
+  const moveCheckboxes = slot.querySelectorAll('.move-checkbox');
+  moveCheckboxes.forEach(cb => cb.checked = false);
+
+  await Promise.all(
+    (entry.moves || []).map(async (moveId, idx) => {
+      const dropdown = moveDropdowns[idx];
+      const checkbox = moveCheckboxes[idx];
+      if (dropdown && moveId !== null) {
+        const ts = await waitForTomSelect(dropdown);
+        if (ts) {
+          ts.setValue(String(moveId));
+          if (checkbox) checkbox.checked = true;
+        }
+      }
+    })
+  );
+
+  // Base Ability
+  const abilitySelect = slot.querySelector('.ability-select')?.tomselect;
+  if (entry.ability !== undefined && entry.ability !== null && abilitySelect) {
+    abilitySelect.setValue(String(entry.ability));
+  }
+
+  // Nature
+  const natureSelect = slot.querySelector('.nature-select')?.tomselect;
+  const natureCheckbox = slot.querySelector('.nature-checkbox');
+  if (natureCheckbox) natureCheckbox.checked = false;
+
+  if (entry.nature && natureSelect && natureCheckbox) {
+    natureCheckbox.checked = true;
+    natureSelect.setValue(entry.nature);
+  }
+
+  // Passive Ability Checkbox
+  const passiveCheckbox = slot.querySelector('.disable-passive-checkbox');
+  if (passiveCheckbox) {
+    passiveCheckbox.checked = !!entry.disabledPassive;
+    passiveCheckbox.dispatchEvent(new Event('change'));
+  }
+
+  // Tera
+  const teraSelect = slot.querySelector('.tera-select')?.tomselect;
+  if (teraSelect && entry.tera) {
+    teraSelect.setValue(entry.tera);
+  }
+
+  // Items
+  if (entry.items) {
+    teamItemSelections[slotIndex] = { ...entry.items };
+
+    const isPopupOpen = document.querySelector('.item-popup');
+    if (isPopupOpen) {
+      const popup = isPopupOpen.querySelector('.item-popup');
+      popup.innerHTML = '';
+      renderItemSections(popup, window.itemData, slotIndex);
+    }
+  }
+
+  updateTeamSummary();
+}
+
+
+
+async function loadPreMadePokemon() {
+  const slotIndex = parseInt(document.getElementById('SlotSelector').value) - 1;
+  const fileName = document.getElementById('preMadePokemonDropdown').value;
+
+  if (isNaN(slotIndex) || slotIndex < 0 || slotIndex > 5) {
+    alert("Please select a valid slot first.");
+    return;
+  }
+
+  if (!fileName) {
+    alert("Please select a pre-made Pokémon.");
+    return;
+  }
+
+  try {
+    // Step 1: Reset slot
+    resetSingleSlot(slotIndex);
+
+    // Step 2: Wait for DOM update
+    await new Promise(res => setTimeout(res, 100));
+
+    // Step 3: Load file
+    const response = await fetch(`Pokemons/${fileName}`);
+    const pokemonData = await response.json();
+
+    // Step 4: Import Pokémon
+    await importPokemonToSlot(slotIndex, pokemonData[0]);
+
+    // Step 5: Clear checkboxes in this slot
+    clearSlotCheckboxes(slotIndex);
+
+    // Step 6 (optional): Clear selection
+    document.getElementById('preMadePokemonDropdown').value = "";
+  } catch (err) {
+    console.error(err);
+    alert("Error loading Pokémon.");
+  }
+}
+
+document.getElementById('preMadePokemonDropdown').addEventListener('change', loadPreMadePokemon);

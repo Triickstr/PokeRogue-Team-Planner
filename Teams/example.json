@@ -1,0 +1,122 @@
+[
+  {
+    "pokemon": 809,
+    "fusion": null,
+    "moves": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 764,
+    "fusion": null,
+    "moves": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 282,
+    "fusion": null,
+    "moves": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 302,
+    "fusion": null,
+    "moves": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 1276,
+    "fusion": null,
+    "moves": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 199,
+    "fusion": null,
+    "moves": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  }
+]

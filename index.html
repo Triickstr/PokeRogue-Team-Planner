@@ -15,12 +15,47 @@
 
 <div id="exportImportControls" style="display: flex; align-items: center; gap: 10px;">
   <button onclick="resetTeamBuilder()">Reset Team</button>
-  <select id="preMadeTeamDropdown">
-    <option value="">Load Pre-Made Team</option>
-  </select>
   <button onclick="downloadTeamSummaryImage()">Download Summary</button>
+  <button id="exportPkm">Export Pokemon</button>
   <button id="exportBtn">Export Team</button>
   <input type="file" id="importFile" accept=".json" />
+</div>
+
+<div id="loaderToggle" style="margin-bottom: 16px; display: flex; gap: 12px;">
+  <button onclick="showLoader('team')" id="toggleTeam" class="active">Full Team Loader</button>
+  <button onclick="showLoader('pokemon')" id="togglePokemon">Pokemon Loader</button>
+</div>
+
+<!-- Moved Dropdown Below -->
+<div id="loadPreMadeTeam" style="margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 12px;">
+  <div>
+    <select id="preMadeTeamFilter" multiple></select>
+      <option value="">Filter Options</option>
+    </select>
+  </div>
+  <div style="margin-left: 24px;">
+    <select id="preMadeTeamDropdown">
+      <option value="">Load Pre-Made Team</option>
+    </select>
+  </div>
+</div>
+
+<div id="loadPreMadePokemon" style="margin-bottom: 24px; display: none; flex-wrap: wrap; gap: 12px;">
+  <div>
+    <select id="preMadePkmFilter" multiple></select>
+      <option value="">Filter Options</option>
+    </select>
+  </div>
+  <div style="margin-left: 24px;">
+    <select id="SlotSelector">
+      <option value="">Select Slot</option>
+    </select>
+  </div>
+  <div>
+    <select id="preMadePokemonDropdown">
+      <option value="">Select Pre-Made Pokemon</option>
+    </select>
+  </div>
 </div>
 
   <div class="team-summary" id="teamSummary"></div>
@@ -31,5 +66,25 @@
   <script src="en.js"></script>
   <!-- Then load app logic -->
   <script src="main.js"></script>
+  <script>
+  function showLoader(type) {
+    const teamDiv = document.getElementById('loadPreMadeTeam');
+    const pkmDiv = document.getElementById('loadPreMadePokemon');
+    const teamBtn = document.getElementById('toggleTeam');
+    const pkmBtn = document.getElementById('togglePokemon');
+
+    if (type === 'team') {
+      teamDiv.style.display = 'flex';
+      pkmDiv.style.display = 'none';
+      teamBtn.classList.add('active');
+      pkmBtn.classList.remove('active');
+    } else {
+      teamDiv.style.display = 'none';
+      pkmDiv.style.display = 'flex';
+      teamBtn.classList.remove('active');
+      pkmBtn.classList.add('active');
+    }
+  }
+</script>
 </body>
 </html>

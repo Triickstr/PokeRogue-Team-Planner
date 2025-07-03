@@ -1,0 +1,27 @@
+[
+  {
+    "pokemon": 816,
+    "fusion": null,
+    "moves": [
+      1092,
+      null,
+      907,
+      null,
+      494,
+      null,
+      365,
+      null
+    ],
+    "ability": 168,
+    "fusionAbility": null,
+    "nature": "Modest",
+    "tera": null,
+    "items": {
+      "hp_up": 31,
+      "carbos": 31,
+      "golden_egg": 99,
+      "lucky_egg": 99
+    },
+    "disabledPassive": false
+  }
+]

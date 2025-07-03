@@ -203,7 +203,7 @@ select {
 }
 
 #exportImportControls {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .move-compatible { background-color: #d4edda; }       /* green */
@@ -215,4 +215,35 @@ select {
   justify-content: space-between;
   gap: 10px;
   margin-top: 5px;
+}
+
+#preMadeTeamDropdown {
+  padding: 6px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: none;
+  width: 200px;
+}
+
+#loaderToggle button {
+  padding: 6px 12px;
+  border: 1px solid #aaa;
+  background-color: #eee;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#loaderToggle button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+
+.ts-control {
+  max-width: 260px !important;
+}
+
+.ts-dropdown {
+  max-height: 120px;
+  overflow-y: auto;
 }

@@ -1,4 +1,6 @@
 [
-  { "name": "[MEDIUM] Entrainment Normalize by Grex", "file": "[MEDIUM] Entrainment Normalize by Grex.json" },
-  { "name": "[MEDIUM] Prankster Quash + Entrainment by nonono", "file": "[MEDIUM] Prankster Quash + Entrainment Sturdy by nonono.json" }
+  { "name": "Entrainment Normalize by Grex", "file": "[MEDIUM] Entrainment Normalize by Grex.json", "filters": ["Medium", "Full Comp"] },
+  { "name": "Prankster Quash + Entrainment by nonono", "file": "[MEDIUM] Prankster Quash + Entrainment Sturdy by nonono.json", "filters": ["Medium", "Full Comp"] },
+  { "name": "Test Example", "file": "example.json", "filters": ["Easy", "Starters"] },
+  { "name": "Test 2 Example", "file": "metal_burst.json", "filters": ["Easy", "Full Comp"] }
 ]
