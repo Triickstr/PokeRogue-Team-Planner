@@ -344,7 +344,7 @@ async function loadPreMadeTeams() {
 
     new TomSelect(filterDropdown, {
       plugins: ['remove_button'],
-      maxItems: 3,
+      maxItems: 2,
       placeholder: 'Filter Options',
       maxOptions: 100,
       onChange: (values) => {
@@ -448,7 +448,7 @@ async function populatePreMadePokemonDropdown() {
 
     new TomSelect(filterDropdown, {
       plugins: ['remove_button'],
-      maxItems: 3,
+      maxItems: 2,
       placeholder: 'Filter Options',
       maxOptions: 100,
       onChange: (values) => {
