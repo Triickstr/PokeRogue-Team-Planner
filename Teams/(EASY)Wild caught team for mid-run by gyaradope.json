@@ -1,0 +1,145 @@
+[
+  {
+    "pokemon": 472,
+    "fusion": null,
+    "moves": [
+      828,
+      null,
+      430,
+      null,
+      365,
+      null,
+      745,
+      null
+    ],
+    "ability": 175,
+    "fusionAbility": null,
+    "nature": "Modest",
+    "tera": "Water",
+    "items": {},
+    "disabledPassive": true
+  },
+  {
+    "pokemon": 27,
+    "fusion": null,
+    "moves": [
+      907,
+      null,
+      894,
+      null,
+      653,
+      null,
+      631,
+      null
+    ],
+    "ability": 56,
+    "fusionAbility": null,
+    "nature": "Hasty",
+    "tera": null,
+    "items": {
+      "soul_dew": 10,
+      "quick_claw": 3,
+      "leftovers": 4,
+      "grip_claw": 5,
+      "focus_band": 5,
+      "shell_bell": 4,
+      "zoom_lens": 2,
+      "mega_stone": 1,
+      "reviver_seed": 1,
+      "golden_egg": 40,
+      "lucky_egg": 99,
+      "carbos": 31
+    },
+    "disabledPassive": true
+  },
+  {
+    "pokemon": 55,
+    "fusion": 98,
+    "moves": [
+      503,
+      null,
+      494,
+      null,
+      558,
+      null,
+      430,
+      null
+    ],
+    "ability": 82,
+    "fusionAbility": 42,
+    "nature": null,
+    "tera": null,
+    "items": {
+      "lucky_egg": 25,
+      "golden_egg": 25,
+      "reviver_seed": 1,
+      "focus_band": 5,
+      "grip_claw": 0,
+      "kings_rock": 3,
+      "leftovers": 0,
+      "quick_claw": 3,
+      "soul_dew": 5,
+      "carbos": 15
+    },
+    "disabledPassive": true
+  },
+  {
+    "pokemon": 1278,
+    "fusion": null,
+    "moves": [
+      332,
+      null,
+      1046,
+      null,
+      365,
+      null,
+      607,
+      null
+    ],
+    "ability": 45,
+    "fusionAbility": null,
+    "nature": "Bashful",
+    "tera": "Ghost",
+    "items": {
+      "leftovers": 4,
+      "focus_band": 5,
+      "wide_lens": 3
+    },
+    "disabledPassive": true
+  },
+  {
+    "pokemon": 637,
+    "fusion": 1278,
+    "moves": [
+      538,
+      null,
+      804,
+      null,
+      365,
+      null,
+      637,
+      null
+    ],
+    "ability": 35,
+    "fusionAbility": 45,
+    "nature": "Bashful",
+    "tera": null,
+    "items": {
+      "focus_band": 5,
+      "leftovers": 4,
+      "wide_lens": 0
+    },
+    "disabledPassive": true
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  }
+]

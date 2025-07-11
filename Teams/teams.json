@@ -16,16 +16,8 @@
     }
   },
   {
-    "name": "Test Example",
-    "file": "example.json",
-    "filters": {
-      "Difficulty": "Easy",
-      "Type": "Starters"
-    }
-  },
-  {
-    "name": "Test 2 Example",
-    "file": "metal_burst.json",
+    "name": "Mid run - Wild Caught by Gyaradope",
+    "file": "(EASY)Wild caught team for mid-run by gyaradope.json",
     "filters": {
       "Difficulty": "Easy",
       "Type": "Full Comp"
