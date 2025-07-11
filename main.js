@@ -426,6 +426,7 @@ function resetTeamBuilder() {
 
   // Clear item selections and visual areas
   teamItemSelections = [{}, {}, {}, {}, {}, {}];
+  passiveAbilityDisabled = [false, false, false, false, false, false];
   teamGrid.innerHTML = '';
   summaryContainer.innerHTML = '';
 
@@ -724,8 +725,11 @@ const createMoveDropdown = (basePokemon) => {
     img.className = 'pokemon-img';
     img.onerror = () => img.style.display = 'none';
     img.onclick = () => {
+  const index = Array.from(document.querySelectorAll('.team-slot')).indexOf(slot);
   const newSlot = createTeamSlot();
   slot.replaceWith(newSlot);
+  teamItemSelections[index] = {};
+  passiveAbilityDisabled[index] = false;
   updateTeamSummary();
 };
     slot.appendChild(img);
