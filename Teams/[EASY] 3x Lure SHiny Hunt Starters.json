@@ -1,32 +1,122 @@
 [
   {
-    "pokemon": 765,
-    "fusion": 68,
+    "pokemon": 809,
+    "fusion": null,
     "moves": [
-      907,
       null,
-      894,
       null,
-      653,
       null,
-      675,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": 48,
+    "fusionAbility": null,
+    "nature": "Modest",
+    "tera": "Fire",
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 764,
+    "fusion": null,
+    "moves": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
       null
     ],
     "ability": 87,
-    "fusionAbility": 96,
+    "fusionAbility": null,
     "nature": "Jolly",
-    "tera": null,
-    "items": {
-      "carbos": 31,
-      "golden_egg": 40,
-      "lucky_egg": 99,
-      "reviver_seed": 1,
-      "soul_dew": 10,
-      "wide_lens": 3,
-      "zoom_lens": 2,
-      "kings_rock": 3,
-      "grip_claw": 5
-    },
+    "tera": "Fighting",
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 334,
+    "fusion": null,
+    "moves": [
+      503,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": 98,
+    "fusionAbility": null,
+    "nature": "Jolly",
+    "tera": "Normal",
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 1276,
+    "fusion": null,
+    "moves": [
+      607,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": 45,
+    "fusionAbility": null,
+    "nature": "Adamant",
+    "tera": "Rock",
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 302,
+    "fusion": null,
+    "moves": [
+      345,
+      null,
+      894,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": 120,
+    "fusionAbility": null,
+    "nature": "Jolly",
+    "tera": "Normal",
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 199,
+    "fusion": null,
+    "moves": [
+      907,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "ability": 50,
+    "fusionAbility": null,
+    "nature": "Adamant",
+    "tera": "Bug",
+    "items": {},
     "disabledPassive": false
   }
 ]
