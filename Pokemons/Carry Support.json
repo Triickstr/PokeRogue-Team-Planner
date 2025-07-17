@@ -1,0 +1,22 @@
+[
+  {
+    "pokemon": 811,
+    "fusion": 569,
+    "moves": [
+      1124,
+      null,
+      538,
+      null,
+      365,
+      null,
+      745,
+      null
+    ],
+    "ability": 48,
+    "fusionAbility": 121,
+    "nature": "Modest",
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "pokemon": 765,
+    "fusion": 68,
+    "moves": [
+      907,
+      null,
+      894,
+      null,
+      653,
+      null,
+      675,
+      null
+    ],
+    "ability": 87,
+    "fusionAbility": 96,
+    "nature": "Jolly",
+    "tera": null,
+    "items": {
+      "carbos": 31,
+      "golden_egg": 40,
+      "lucky_egg": 99,
+      "reviver_seed": 1,
+      "soul_dew": 10,
+      "wide_lens": 3,
+      "zoom_lens": 2,
+      "kings_rock": 3,
+      "grip_claw": 5
+    },
+    "disabledPassive": false
+  }
+]

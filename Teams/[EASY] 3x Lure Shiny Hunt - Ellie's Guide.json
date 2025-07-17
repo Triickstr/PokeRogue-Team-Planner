@@ -1,0 +1,124 @@
+[
+  {
+    "pokemon": 765,
+    "fusion": 68,
+    "moves": [
+      907,
+      null,
+      894,
+      null,
+      653,
+      null,
+      675,
+      null
+    ],
+    "ability": 87,
+    "fusionAbility": 96,
+    "nature": "Jolly",
+    "tera": null,
+    "items": {
+      "carbos": 31,
+      "golden_egg": 40,
+      "lucky_egg": 99,
+      "reviver_seed": 1,
+      "soul_dew": 10,
+      "wide_lens": 3,
+      "zoom_lens": 2,
+      "kings_rock": 3,
+      "grip_claw": 5
+    },
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 335,
+    "fusion": 68,
+    "moves": [
+      503,
+      null,
+      558,
+      null,
+      430,
+      null,
+      365,
+      null
+    ],
+    "ability": 98,
+    "fusionAbility": 96,
+    "nature": "Jolly",
+    "tera": null,
+    "items": {
+      "grip_claw": 5,
+      "zoom_lens": 2,
+      "reviver_seed": 1
+    },
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 811,
+    "fusion": 569,
+    "moves": [
+      1124,
+      null,
+      538,
+      null,
+      365,
+      null,
+      745,
+      null
+    ],
+    "ability": 48,
+    "fusionAbility": 45,
+    "nature": "Modest",
+    "tera": null,
+    "items": {
+      "grip_claw": 0,
+      "leftovers": 0
+    },
+    "disabledPassive": false
+  },
+  {
+    "pokemon": 216,
+    "fusion": 1278,
+    "moves": [
+      1046,
+      null,
+      607,
+      null,
+      365,
+      null,
+      332,
+      null
+    ],
+    "ability": 63,
+    "fusionAbility": 45,
+    "nature": "Adamant",
+    "tera": "Ghost",
+    "items": {
+      "leftovers": 4,
+      "mini_black_hole": 1
+    },
+    "disabledPassive": false
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  },
+  {
+    "pokemon": null,
+    "fusion": null,
+    "moves": [],
+    "ability": null,
+    "fusionAbility": null,
+    "nature": null,
+    "tera": null,
+    "items": {},
+    "disabledPassive": false
+  }
+]

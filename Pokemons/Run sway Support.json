@@ -1,0 +1,26 @@
+[
+  {
+    "pokemon": 335,
+    "fusion": 68,
+    "moves": [
+      503,
+      null,
+      558,
+      null,
+      430,
+      null,
+      365,
+      null
+    ],
+    "ability": 98,
+    "fusionAbility": 96,
+    "nature": "Jolly",
+    "tera": null,
+    "items": {
+      "grip_claw": 5,
+      "zoom_lens": 2,
+      "reviver_seed": 1
+    },
+    "disabledPassive": false
+  }
+]

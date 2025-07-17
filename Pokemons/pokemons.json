@@ -1,11 +1,38 @@
 [
   {
-    "name": "[Staller] Greninja",
-    "file": "staller.json",
+    "name": "[2x Lure Staller] Mienshao",
+    "file": "2x Lure Staller.json",
     "filters": {
       "Type": "Full Build",
-      "Difficulty": "Medium",
+      "Difficulty": "Easy",
       "Role": "Staller"
+    }
+  },
+  {
+    "name": "[Run Away Support] Linoone",
+    "file": "Run away Support.json",
+    "filters": {
+      "Type": "Full Build",
+      "Difficulty": "Easy",
+      "Role": "Support"
+    }
+  },
+  {
+    "name": "[Carry Support] Delphox",
+    "file": "Carry Support.json",
+    "filters": {
+      "Type": "Full Build",
+      "Difficulty": "Easy",
+      "Role": "Carry"
+    }
+  },
+  {
+    "name": "[DOT] Garganacl",
+    "file": "Dot.json",
+    "filters": {
+      "Type": "Full Build",
+      "Difficulty": "Easy",
+      "Role": "DOT"
     }
   }
 ]

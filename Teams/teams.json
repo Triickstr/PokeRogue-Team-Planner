@@ -22,5 +22,21 @@
       "Difficulty": "Easy",
       "Type": "Full Comp"
     }
+  },
+  {
+    "name": "3x Lure Shiny Hunt - Ellie's Guide",
+    "file": "[EASY] 3x Lure Shiny Hunt - Ellie's Guide.json",
+    "filters": {
+      "Difficulty": "Easy",
+      "Type": "Full Comp"
+    }
+  },
+  {
+    "name": "3x Lure Shiny Hunt - Ellie's Guide",
+    "file": "[EASY] 3x Lure SHiny Hunt Starters.json",
+    "filters": {
+      "Difficulty": "Easy",
+      "Type": "Starters"
+    }
   }
 ]
